@@ -1,0 +1,70 @@
+{
+  "private": true,
+  "name": "design-system-root",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@chance/eslint": "^1.1.0",
+    "@changesets/cli": "^2.29.1",
+    "@radix-ui/colors": "^3.0.0",
+    "@testing-library/cypress": "^10.0.3",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/fs-extra": "^11",
+    "@types/node": "^22",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@types/react-test-renderer": "^19.0.0",
+    "axe-core": "^4.10.3",
+    "cypress": "^14.0.0",
+    "cypress-axe": "1.6.0",
+    "cypress-real-events": "^1.14.0",
+    "esbuild": "0.24.2",
+    "eslint": "^9.32.0",
+    "eslint-plugin-cypress": "^4.1.0",
+    "execa": "^9.5.2",
+    "fs-extra": "^11.1.1",
+    "glob": "^10.2.2",
+    "husky": "^9.1.7",
+    "jsdom": "^26.0.0",
+    "lint-staged": "^16.1.4",
+    "msw": "^2.10.4",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "pretty-quick": "^4.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-test-renderer": "^19.0.0",
+    "replace-in-files": "^3.0.0",
+    "start-server-and-test": "2.0.3",
+    "tailwindcss": "^4.1.11",
+    "tsup": "^8.3.6",
+    "typescript": "^5.9.2",
+    "vite": "^6.2.0",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.1.1",
+    "vitest-axe": "^1.0.0-pre.5",
+    "@vitejs/plugin-react": "^4.7.0",
+    "clsx": "^2.1.1"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write .",
+    "release": "changeset version && changeset publish"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "printWidth": 100,
+    "singleQuote": true
+  }
+}
