@@ -13,12 +13,12 @@ process.on('SIGTERM', () => process.exit(0)); // kill 명령 등
 
 // ✅ CLI 인자 파싱
 const args = minimist(process.argv.slice(2));
-const relativePath = path.relative(process.cwd(), args._[0] || '.');
+const target = path.relative(process.cwd(), args._[0] || '.');
 
 const options = {
-  format: args['format'] || 'all',
-  noDts: args['no-dts'] || false,
-  noExternal: args['no-external'] || false,
+  format: args.format || 'all',
+  noDts: Boolean(args['no-dts']),
+  css: args.css || 'auto',
 };
 
-await build(relativePath, options);
+await build(target, options);
