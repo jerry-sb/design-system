@@ -1,59 +1,11 @@
 // @ts-check
 import fs from 'node:fs';
 import path from 'node:path';
-import { createRequire } from 'node:module'; // ✅ 추가
-import { rollup } from 'rollup';
+import { createRequire } from 'node:module';
+import { rollup, watch as rollupWatch } from 'rollup';
 import { dts } from 'rollup-plugin-dts';
 import typescript from '@rollup/plugin-typescript';
-
-/**
- * Tailwind/PostCSS 플러그인 로더
- * @param {{ resolvedPath: string; tailwindConfigPath?: string }} params
- * @returns {Promise<import('rollup').Plugin>}
- */
-async function loadCssPlugins({ resolvedPath, tailwindConfigPath }) {
-  // rollup-plugin-postcss는 빌더가 직접 의존해야 함 (builder deps)
-  const [{ default: postcss }] = await Promise.all([import('rollup-plugin-postcss')]);
-
-  // ✅ 대상 패키지 기준으로 모듈 해석
-  const requireFromTarget = createRequire(path.join(resolvedPath, 'package.json'));
-
-  let tailwind;
-  try {
-    // v3/v4 공통: tailwindcss 패키지의 PostCSS 플러그인
-    // (v4에서도 tailwindcss 자체를 플러그인으로 사용할 수 있음)
-    tailwind = requireFromTarget('tailwindcss');
-  } catch {}
-
-  let autoprefixer;
-  try {
-    autoprefixer = requireFromTarget('autoprefixer');
-  } catch {}
-
-  /** @type {any} */
-  const postcssOptions = {
-    modules: true,
-    extract: true,
-    minimize: true,
-    sourceMap: true,
-    plugins: [],
-  };
-
-  if (tailwind) {
-    postcssOptions.plugins.push(
-      // @ts-ignore
-      tailwind(tailwindConfigPath || path.join(resolvedPath, 'tailwind.config.js'))
-    );
-  }
-
-  if (autoprefixer) {
-    // @ts-ignore
-    postcssOptions.plugins.push(autoprefixer());
-  }
-
-  // @ts-ignore
-  return postcss(postcssOptions);
-}
+import { execSync } from 'node:child_process';
 
 /**
  * @param {string} relativePath
@@ -121,7 +73,7 @@ export async function build(relativePath, options = {}) {
     css === 'postcss' || (css === 'auto' && (hasTailwindConfig || hasTailwindDep));
 
   const plugins = [
-    typescript.default({
+    typescript({
       tsconfig: tsconfigPath,
       declaration: false,
     }),
@@ -149,7 +101,7 @@ export async function build(relativePath, options = {}) {
     const bundle = await rollup({ input: inputFiles, external: isExternal, plugins });
 
     if (format === 'all' || format === 'cjs') {
-      await bundle.write({ dir: distDir, format: 'cjs', sourcemap: true });
+      await bundle.write({ dir: distDir, format: 'commonjs', sourcemap: true });
       console.log(`✅ CJS 번들 완료`);
     }
     if (format === 'all' || format === 'esm') {
@@ -164,6 +116,11 @@ export async function build(relativePath, options = {}) {
 
   if (!noDts) {
     try {
+      execSync(
+        `tsc --project ${tsconfigPath} --emitDeclarationOnly --declaration --outDir ${distDir}`,
+        { stdio: 'inherit' }
+      );
+
       const dtsBundle = await rollup({
         input: path.join(distDir, 'index.d.ts'),
         plugins: [dts()],
@@ -180,4 +137,134 @@ export async function build(relativePath, options = {}) {
   }
 
   console.timeEnd(`📦 전체 빌드 시간`);
+}
+
+/**
+ * Watch 모드: JS만 재번들 (DTS는 보통 생략)
+ * @param {string} relativePath
+ * @param {{ format?: 'all'|'cjs'|'esm'; css?: 'auto'|'postcss'|'none' }} options
+ */
+export async function buildWatch(relativePath, options = {}) {
+  const { format = 'all', css = 'auto' } = options;
+
+  const resolvedPath = path.resolve(process.cwd(), relativePath);
+  const pkgJsonPath = path.join(resolvedPath, 'package.json');
+  const tsconfigPath = path.join(resolvedPath, 'tsconfig.json');
+  const distDir = path.join(resolvedPath, 'dist');
+
+  if (!fs.existsSync(pkgJsonPath) || !fs.existsSync(tsconfigPath)) {
+    console.error(`❌ ${relativePath}에 package.json/tsconfig.json이 없습니다.`);
+    process.exit(1);
+  }
+
+  // entry/files
+  const entryPoints = ['index.ts'];
+  const inputFiles = entryPoints.map((f) => path.join(relativePath, 'src', f));
+
+  // externals
+  const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));
+  const externals = [
+    ...Object.keys(pkgJson.dependencies || {}),
+    ...Object.keys(pkgJson.peerDependencies || {}),
+  ];
+  /** @type {(id: string) => boolean} */
+  const isExternal = (id) =>
+    externals.includes(id) ||
+    externals.some((dep) => id.startsWith(`${dep}/`)) ||
+    id.startsWith('@jerry/');
+
+  // css 플러그인 여부
+  const hasTailwindConfig =
+    fs.existsSync(path.join(resolvedPath, 'tailwind.config.js')) ||
+    fs.existsSync(path.join(resolvedPath, 'tailwind.config.cjs')) ||
+    fs.existsSync(path.join(resolvedPath, 'tailwind.config.ts'));
+  const hasTailwindDep =
+    (pkgJson.dependencies && pkgJson.dependencies['tailwindcss']) ||
+    (pkgJson.devDependencies && pkgJson.devDependencies['tailwindcss']);
+  const shouldEnablePostcss =
+    css === 'postcss' || (css === 'auto' && (hasTailwindConfig || hasTailwindDep));
+
+  const plugins = [
+    // watch에서는 d.ts 생성은 끈다 (속도/안정성)
+    typescript({ tsconfig: tsconfigPath, declaration: false }),
+  ];
+  if (shouldEnablePostcss) {
+    const tailwindConfigPath = ['tailwind.config.js', 'tailwind.config.cjs', 'tailwind.config.ts']
+      .map((p) => path.join(resolvedPath, p))
+      .find((p) => fs.existsSync(p));
+    const postcssPlugin = await loadCssPlugins({ resolvedPath, tailwindConfigPath });
+    plugins.push(postcssPlugin);
+    console.log(`💅 (watch) PostCSS${hasTailwindDep ? ' + Tailwind' : ''} 활성화`);
+  } else {
+    console.log(`🚫 (watch) CSS 파이프라인 비활성화 (css=${css})`);
+  }
+
+  /** @type {import('rollup').OutputOptions[]} */
+  const outputs = [];
+  if (format === 'all' || format === 'cjs')
+    outputs.push({ dir: distDir, format: 'commonjs', sourcemap: true });
+  if (format === 'all' || format === 'esm')
+    outputs.push({ dir: distDir, format: 'esm', sourcemap: true });
+
+  const watcher = rollupWatch({
+    input: inputFiles,
+    external: isExternal,
+    plugins,
+    output: outputs,
+    watch: { clearScreen: true },
+  });
+
+  watcher.on('event', (e) => {
+    if (e.code === 'BUNDLE_END') console.log('🔁 Rebuilt in', e.duration, 'ms');
+    if (e.code === 'ERROR') console.error('❌ Watch error', e.error);
+  });
+}
+
+/**
+ * Tailwind/PostCSS 플러그인 로더
+ * @param {{ resolvedPath: string; tailwindConfigPath?: string }} params
+ * @returns {Promise<import('rollup').Plugin>}
+ */
+async function loadCssPlugins({ resolvedPath, tailwindConfigPath }) {
+  // rollup-plugin-postcss는 빌더가 직접 의존해야 함 (builder deps)
+  const [{ default: postcss }] = await Promise.all([import('rollup-plugin-postcss')]);
+
+  // ✅ 대상 패키지 기준으로 모듈 해석
+  const requireFromTarget = createRequire(path.join(resolvedPath, 'package.json'));
+
+  let tailwind;
+  try {
+    // v3/v4 공통: tailwindcss 패키지의 PostCSS 플러그인
+    // (v4에서도 tailwindcss 자체를 플러그인으로 사용할 수 있음)
+    tailwind = requireFromTarget('tailwindcss');
+  } catch {}
+
+  let autoprefixer;
+  try {
+    autoprefixer = requireFromTarget('autoprefixer');
+  } catch {}
+
+  /** @type {any} */
+  const postcssOptions = {
+    modules: true,
+    extract: true,
+    minimize: true,
+    sourceMap: true,
+    plugins: [],
+  };
+
+  if (tailwind) {
+    postcssOptions.plugins.push(
+      // @ts-ignore
+      tailwind(tailwindConfigPath || path.join(resolvedPath, 'tailwind.config.js'))
+    );
+  }
+
+  if (autoprefixer) {
+    // @ts-ignore
+    postcssOptions.plugins.push(autoprefixer());
+  }
+
+  // @ts-ignore
+  return postcss(postcssOptions);
 }

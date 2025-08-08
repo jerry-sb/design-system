@@ -9,7 +9,7 @@
     ".": "./rollup-builder.js"
   },
   "bin": {
-    "radix-build": "./jerry-build.js"
+    "jerry-build": "./jerry-build.js"
   },
   "dependencies": {
     "minimist": "^1.2.8",

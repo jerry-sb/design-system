@@ -2,7 +2,7 @@
 // @ts-check
 import path from 'node:path';
 import minimist from 'minimist';
-import { build } from './rollup-builder.js';
+import { build, buildWatch } from './rollup-builder.js';
 
 // ✅ 전역 에러 핸들링
 process.on('unhandledRejection', (err) => {
@@ -13,7 +13,7 @@ process.on('SIGTERM', () => process.exit(0)); // kill 명령 등
 
 // ✅ CLI 인자 파싱
 const args = minimist(process.argv.slice(2));
-const target = path.relative(process.cwd(), args._[0] || '.');
+const target = path.resolve(process.cwd(), args._[0] ?? '.');
 
 const options = {
   format: args.format || 'all',
@@ -21,4 +21,8 @@ const options = {
   css: args.css || 'auto',
 };
 
-await build(target, options);
+if (!args.watch) {
+  await build(target, options);
+} else {
+  await buildWatch(target, options);
+}

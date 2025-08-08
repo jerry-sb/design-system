@@ -1,0 +1,36 @@
+{
+    "name": "@jerry-ui/style-utils",
+    "version": "0.0.1",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      }
+    },
+    "files": ["dist"],
+    "dependencies": {
+      "clsx": "^2.1.1",
+      "class-variance-authority": "^0.7.0",
+      "tailwind-merge": "^2.5.2"
+    },
+    "peerDependencies": {
+      "react": ">=18",
+      "react-dom": ">=18"
+    },
+    "devDependencies": {
+      "@jerry/builder": "workspace:*",
+      "@jerry/eslint-config": "workspace:*",
+      "@jerry/typescript-config": "workspace:*",
+      "eslint": "^9.18.0",
+      "typescript": "^5.4.5"
+    },
+    "scripts": {
+      "build": "jerry-build .",
+      "typecheck": "tsc -p tsconfig.json --noEmit"
+    }
+  }

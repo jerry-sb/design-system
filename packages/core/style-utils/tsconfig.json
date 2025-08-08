@@ -1,10 +1,8 @@
 {
   "extends": "@jerry/typescript-config/react-library",
   "compilerOptions": {
-    "rootDir": ".",
-    "allowJs": true,
-    "noEmit": true
+    "outDir": "dist"
   },
-  "include": ["**/*"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }

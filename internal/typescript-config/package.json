@@ -2,5 +2,14 @@
   "name": "@jerry/typescript-config",
   "version": "0.0.0",
   "private": true,
-  "license": "MIT"
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./base": "./base.json",
+    "./react-library": "./react-library.json",
+    "./vite-app": "./vite-app.json",
+    "./vite-node": "./vite-node.json",
+    "./nextjs": "./nextjs.json"
+  },
+  "files": ["*.json", "react-library.json", "vite-app.json", "vite-node.json", "nextjs.json", "base.json"]
 }
