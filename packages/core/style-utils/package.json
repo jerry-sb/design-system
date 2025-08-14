@@ -27,10 +27,11 @@
       "@jerry/eslint-config": "workspace:*",
       "@jerry/typescript-config": "workspace:*",
       "eslint": "^9.18.0",
-      "typescript": "^5.4.5"
+      "typescript": "^5.9.2"
     },
     "scripts": {
       "build": "jerry-build .",
+      "dev": "jerry-build . --watch",
       "typecheck": "tsc -p tsconfig.json --noEmit"
     }
   }
