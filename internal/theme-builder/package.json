@@ -1,0 +1,22 @@
+{
+  "name": "@jerry/theme-builder",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "jerry-theme-build": "./jerry-theme-build.js"
+  },
+  "devDependencies": {
+    "@radix-ui/colors": "^3.0.0",
+    "@jerry/eslint-config": "workspace:*",
+    "eslint": "^9.18.0"
+  },
+  "peerDependencies": {
+    "tailwindcss": ">=4.0.0"
+  }
+}
