@@ -2,7 +2,8 @@
 // @ts-check
 import path from 'node:path';
 import minimist from 'minimist';
-import { build, buildWatch } from './rollup-builder.js';
+import build from './src/rollup-builder.js';
+import buildWatch from './src/rollup-watch-builder.js';
 
 // ✅ 전역 에러 핸들링
 process.on('unhandledRejection', (err) => {

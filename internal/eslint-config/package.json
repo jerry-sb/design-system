@@ -4,12 +4,30 @@
   "private": true,
   "license": "MIT",
   "type": "module",
+
   "main": "./index.js",
+  "types": "./index.d.ts",
   "exports": {
-    ".": "./index.js",
-    "./react-package": "./react-package.js",
-    "./vite": "./vite.js"
+    ".": {
+      "default": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./react-package": {
+      "default": "./react-package.js",
+      "types": "./react-package.d.ts"
+    },
+    "./vite": {
+      "default": "./vite.js",
+      "types": "./vite.d.ts"
+    }
   },
+
+  "files": [
+    "index.js", "index.d.ts",
+    "react-package.js", "react-package.d.ts",
+    "vite.js", "vite.d.ts"
+  ],
+
   "scripts": {
     "lint": "eslint --max-warnings 0 ."
   },

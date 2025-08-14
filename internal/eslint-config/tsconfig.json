@@ -1,5 +1,5 @@
 {
-  "extends": "@jerry/typescript-config/base.json",
+  "extends": "@jerry/typescript-config/react-library",
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",

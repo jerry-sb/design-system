@@ -4,9 +4,9 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "main": "./rollup-builder.js",
+  "main": "./src/index.js",
   "exports": {
-    ".": "./rollup-builder.js"
+    ".": "./src/index.js"
   },
   "bin": {
     "jerry-build": "./jerry-build.js"
@@ -17,12 +17,10 @@
   },
   "devDependencies": {
     "@jerry/eslint-config": "workspace:*",
-    "@jerry/typescript-config": "workspace:*",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/minimist": "^1.2.5",
     "eslint": "^9.18.0",
     "rollup-plugin-dts": "^6.1.0",
-    "rollup-plugin-postcss": "^4.0.2",
-    "typescript": "^5.4.5"
+    "rollup-plugin-postcss": "^4.0.2"
   }
 }
