@@ -1,4 +1,9 @@
-// @ts-check
-import { configs } from '@jerry/eslint-config';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-export default configs;
+import baseConfigs from '@jerry/eslint-config';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default [...baseConfigs({ rootDir: __dirname })];

@@ -4,43 +4,47 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-
   "main": "./index.js",
   "types": "./index.d.ts",
   "exports": {
-    ".": {
-      "default": "./index.js",
-      "types": "./index.d.ts"
-    },
-    "./react-package": {
-      "default": "./react-package.js",
-      "types": "./react-package.d.ts"
-    },
-    "./vite": {
-      "default": "./vite.js",
-      "types": "./vite.d.ts"
-    }
+    ".": "./index.js",
+    "./react-package": "./react-package.js",
+    "./vite": "./vite.js"
   },
-
   "files": [
-    "index.js", "index.d.ts",
-    "react-package.js", "react-package.d.ts",
-    "vite.js", "vite.d.ts"
+    "index.js",
+    "index.d.ts",
+    "react-package.js",
+    "react-package.d.ts",
+    "vite.js",
+    "vite.d.ts"
   ],
-
   "scripts": {
     "lint": "eslint --max-warnings 0 ."
   },
-  "dependencies": {
-    "@chance/eslint": "^1.1.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "eslint-plugin-storybook": "^0.11.2"
-  },
   "devDependencies": {
     "@jerry/typescript-config": "workspace:*",
-    "eslint": "^9.18.0"
+    "@vitest/eslint-plugin": "^1.3.4"
   },
   "peerDependencies": {
-    "eslint": ">=9.18"
+    "eslint": ">=9.32.0",
+    "@eslint/js": ">=9.33.0",
+    "@typescript-eslint/eslint-plugin": ">=8.39.1",
+    "@typescript-eslint/parser": ">=8.39.1",
+    "@vitest/eslint-plugin": ">=1.3.4",
+    "eslint-plugin-jsx-a11y": ">=6.10.2",
+    "eslint-plugin-n": ">=17.21.3",
+    "eslint-plugin-promise": ">=7.2.1",
+    "eslint-plugin-react": ">=7.37.5",
+    "eslint-plugin-react-hooks": ">=5.2.0",
+    "eslint-plugin-simple-import-sort": ">=12.1.1",
+    "eslint-plugin-unused-imports": ">=4.1.4",
+    "eslint-config-prettier": ">=10.1.8",
+    "prettier": ">=3.6.2"
+  },
+  "peerDependenciesMeta": {
+    "@vitest/eslint-plugin": {
+      "optional": true
+    }
   }
 }
