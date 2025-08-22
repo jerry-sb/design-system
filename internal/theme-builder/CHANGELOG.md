@@ -1,5 +1,11 @@
 # @jerryshim/theme-builder
 
+## 0.2.1
+
+### Patch Changes
+
+- 422a895: CI/CD 워크플로 수정: changesets version/publish 단계 정리
+
 ## 0.2.0
 
 ### Minor Changes
