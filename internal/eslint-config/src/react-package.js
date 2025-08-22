@@ -2,7 +2,7 @@ import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 
-import { baseConfigs } from './index.js';
+import baseConfigs from './index.js';
 
 /* ───────────────────────── React Package ─────────────────────────
  * - React + TS 라이브러리(패키지)용

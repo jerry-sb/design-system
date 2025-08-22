@@ -36,7 +36,7 @@ const allCodeFiles = ['**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}'];
 /**
  * @type {(args?: { project?: string; rootDir?: string }) => import('eslint').Linter.Config[]}
  */
-export function baseConfigs({ project = './tsconfig.json', rootDir = __dirname } = {}) {
+function baseConfigs({ project = './tsconfig.json', rootDir = __dirname } = {}) {
   return [
     /* 무시 경로 */
     { ignores: commonIgnores },
@@ -152,3 +152,5 @@ export function baseConfigs({ project = './tsconfig.json', rootDir = __dirname }
     prettierRecommended,
   ];
 }
+
+export default baseConfigs;

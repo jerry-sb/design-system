@@ -1,3 +1,3 @@
-import { baseConfigs } from '@jerry/eslint-config';
+import baseConfigs from '@jerryshim/eslint-config';
 
 export default [...baseConfigs({ project: null })];

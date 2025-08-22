@@ -1,13 +1,13 @@
 {
+  "name": "@jerryshim/monorepo",
+  "version": "0.0.0",
   "private": true,
-  "name": "design-system-root",
-  "workspaces": [
-    "packages/*"
-  ],
   "devDependencies": {
-    "@chance/eslint": "^1.1.0",
-    "@changesets/cli": "^2.29.1",
-    "@radix-ui/colors": "^3.0.0",
+    "@changesets/cli": "^2.29.6",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@eslint/js": "^9.33.0",
+    "@jerryshim/eslint-config": "workspace:*",
     "@testing-library/cypress": "^10.0.3",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -18,13 +18,27 @@
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
     "@types/react-test-renderer": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/eslint-plugin": "^1.3.4",
     "axe-core": "^4.10.3",
+    "clsx": "^2.1.1",
     "cypress": "^14.0.0",
     "cypress-axe": "1.6.0",
     "cypress-real-events": "^1.14.0",
     "esbuild": "0.24.2",
     "eslint": "^9.32.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^4.1.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-n": "^17.21.3",
+    "eslint-plugin-promise": "^7.2.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-storybook": "^9.1.2",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "execa": "^9.5.2",
     "fs-extra": "^11.1.1",
     "glob": "^10.2.2",
@@ -43,25 +57,25 @@
     "vite": "^6.2.0",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^3.1.1",
-    "vitest-axe": "^1.0.0-pre.5",
-    "@vitejs/plugin-react": "^4.7.0",
-    "clsx": "^2.1.1"
+    "vitest-axe": "^1.0.0-pre.5"
   },
   "scripts": {
-    "prepare": "husky install",
-    "lint": "eslint . --ext .ts,.tsx",
+    "build": "pnpm -r run build",
+    "dev": "pnpm -r --parallel --filter ./apps/* run dev",
+    "typecheck": "pnpm -r run typecheck",
+    "lint": "pnpm -r run lint:fix",
     "format": "prettier --write .",
-    "release": "changeset version && changeset publish"
+    "release": "changeset publish",
+    "changeset": "changeset",
+    "version-packages": "changeset version"
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "eslint --fix",
+    "(apps|packages|internal)/**/*.{js,ts,jsx,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.json": [
       "prettier --write"
     ]
-  },
-  "prettier": {
-    "trailingComma": "es5",
-    "printWidth": 100,
-    "singleQuote": true
   }
 }

@@ -1,6 +1,6 @@
 import vitestPlugin from '@vitest/eslint-plugin';
 
-import { baseConfigs } from './index.js';
+import baseConfigs from './index.js';
 
 /* ───────────────────────── Vite ─────────────────────────
  * - Vite/도구 설정 파일은 Node 런타임 가정

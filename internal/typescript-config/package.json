@@ -1,5 +1,5 @@
 {
-  "name": "@jerry/typescript-config",
+  "name": "@jerryshim/typescript-config",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
@@ -9,7 +9,16 @@
     "./react-library": "./react-library.json",
     "./vite-app": "./vite-app.json",
     "./vite-node": "./vite-node.json",
+    "./js-doc": "./js-doc.json",
     "./nextjs": "./nextjs.json"
   },
-  "files": ["*.json", "react-library.json", "vite-app.json", "vite-node.json", "nextjs.json", "base.json"]
+  "files": [
+    "*.json",
+    "react-library.json",
+    "vite-app.json",
+    "vite-node.json",
+    "nextjs.json",
+    "base.json",
+    "js-doc.json"
+  ]
 }

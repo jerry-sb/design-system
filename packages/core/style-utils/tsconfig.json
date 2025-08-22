@@ -1,5 +1,5 @@
 {
-  "extends": "@jerry/typescript-config/react-library",
+  "extends": "@jerryshim/typescript-config/react-library",
   "compilerOptions": {
     "outDir": "dist"
   },

@@ -1,4 +1,3 @@
-// @ts-check
-import { configs } from '@jerry/eslint-config';
+import baseConfigs from '@jerryshim/eslint-config';
 
-export default configs;
+export default [...baseConfigs()];
