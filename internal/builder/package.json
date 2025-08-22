@@ -1,7 +1,7 @@
 {
   "name": "@jerry/builder",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "license": "MIT",
   "type": "module",
   "main": "./src/index.js",
@@ -10,6 +10,18 @@
   },
   "bin": {
     "jerry-build": "./jerry-build.js"
+  },
+  "files": [
+    "src",
+    "jerry-build.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "minimist": "^1.2.8",
