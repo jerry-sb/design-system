@@ -1,37 +1,23 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-// @ts-nocheck
-/**
- * @typedef {Object} ColorNameComponents
- * @property {string} base
- * @property {boolean} dark
- * @property {boolean} p3
- * @property {boolean} alpha
- *
- * @param {string} colorName
- * @returns {ColorNameComponents}
- */
-export function parseColorName(colorName) {
+import type { ColorNameComponents } from '../types';
+
+export function parseColorName(colorName: string): ColorNameComponents {
   const { base, dark, p3, alpha } = /^(?<base>.+?)(?<dark>dark)?(?<p3>p3)?(?<alpha>a)?$/i.exec(
-    colorName
-  ).groups;
+    colorName,
+  )!.groups!;
 
   return {
-    base,
+    base: base!,
     dark: dark !== undefined,
     p3: p3 !== undefined,
     alpha: alpha !== undefined,
   };
 }
 
-/**
- * @param {ColorNameComponents} components
- * @returns {string}
- */
-export function buildColorName(components) {
+export function buildColorName(components: ColorNameComponents): string {
   const { base, dark, p3, alpha } = components;
-
   let colorName = base;
 
   if (dark) {
@@ -49,13 +35,7 @@ export function buildColorName(components) {
   return colorName;
 }
 
-/**
- * 인덱스 파일에 중복 없이 @import 한 줄을 추가
- * 파일이 없으면 생성
- * @param {string} filePath
- * @param {string} importLine
- */
-export function appendUniqueImport(filePath, importLine) {
+export function appendUniqueImport(filePath: string, importLine: string) {
   if (!fs.existsSync(filePath)) {
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, '', 'utf-8');
@@ -67,8 +47,8 @@ export function appendUniqueImport(filePath, importLine) {
   if (!hasLine) {
     const next =
       content && !content.endsWith('\n')
-        ? content + '\n' + importLine + '\n'
-        : content + importLine + '\n';
+        ? `${content}\n${importLine}\n`
+        : `${content + importLine}\n`;
     fs.writeFileSync(filePath, next, 'utf-8');
   }
 }

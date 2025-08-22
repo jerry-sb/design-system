@@ -1,7 +1,7 @@
 // @ts-check
-import path from 'node:path';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import path from 'node:path';
 
 /**
  * Theme/Component CSS 빌드 모드
@@ -30,10 +30,8 @@ import { createRequire } from 'node:module';
 async function loadCssPlugins({ resolvedPath, extractTo, twConfigAbs, mode = 'theme' }) {
   // 동적 import (빌더 의존)
   const [{ default: postcss }] = await Promise.all([import('rollup-plugin-postcss')]);
-
   // 대상 패키지 기준 모듈 해석
   const requireFromTarget = createRequire(path.join(resolvedPath, 'package.json'));
-
   /** @type {any | undefined} */
   let tailwind;
   /** @type {any | undefined} */
@@ -77,7 +75,6 @@ async function loadCssPlugins({ resolvedPath, extractTo, twConfigAbs, mode = 'th
 function findCssFiles(rootDir) {
   /** @type {string[]} */
   const out = [];
-
   /** @param {string} d */
   const walk = (d) => {
     for (const name of fs.readdirSync(d)) {
@@ -106,7 +103,6 @@ function scanTailwindDirectives(cssFiles) {
   const reTheme = /@theme\b/;
   const reUtility = /@utility\b/;
   const reConfig = /@config\s+["']([^"']+)["'];?/;
-
   let hasTw = false;
   let configPath = null;
 
@@ -124,4 +120,4 @@ function scanTailwindDirectives(cssFiles) {
   return { hasTw, configPath };
 }
 
-export { loadCssPlugins, findCssFiles, scanTailwindDirectives };
+export { findCssFiles, loadCssPlugins, scanTailwindDirectives };

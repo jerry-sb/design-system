@@ -1,26 +1,47 @@
 {
-  "name": "@jerry/builder",
-  "version": "0.0.0",
-  "private": true,
-  "license": "MIT",
+  "name": "@jerryshim/builder",
+  "version": "0.1.0",
   "type": "module",
   "main": "./src/index.js",
+  "module": "./src/index.js",
+  "license": "MIT",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.cjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      }
+    },
+    "files": [
+      "dist",
+      "bin",
+      "README.md",
+      "LICENSE"
+    ]
   },
   "bin": {
-    "jerry-build": "./jerry-build.js"
+    "jerry-build": "./bin/jerry-build.js"
   },
   "dependencies": {
-    "minimist": "^1.2.8",
-    "rollup": "^4.16.3"
+    "rollup": "^4.46.3",
+    "@rollup/plugin-typescript": "^12.1.4",
+    "rollup-plugin-dts": "^6.2.3",
+    "sade": "^1.8.1",
+    "picocolors": "^1.1.1",
+    "rollup-plugin-postcss": "^4.0.2"
   },
   "devDependencies": {
-    "@jerry/eslint-config": "workspace:*",
-    "@rollup/plugin-typescript": "^11.1.5",
-    "@types/minimist": "^1.2.5",
+    "@jerryshim/eslint-config": "workspace:*",
     "eslint": "^9.18.0",
-    "rollup-plugin-dts": "^6.1.0",
-    "rollup-plugin-postcss": "^4.0.2"
+    "typescript": "^5.9.2"
   }
 }

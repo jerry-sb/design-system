@@ -1,22 +1,60 @@
 {
-  "name": "@jerry/theme-builder",
-  "version": "0.0.0",
-  "private": true,
+  "name": "@jerryshim/theme-builder",
+  "version": "0.1.0",
   "license": "MIT",
   "type": "module",
-  "main": "./src/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "types": "./dist/index.d.ts",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      }
+    },
+    "files": [
+      "dist",
+      "bin",
+      "README.md",
+      "LICENSE"
+    ]
   },
   "bin": {
-    "jerry-theme-build": "./jerry-theme-build.js"
+    "jerry-theme-build": "./bin/jerry-theme-build.js"
+  },
+  "dependencies": {
+    "@radix-ui/colors": "^3.0.0",
+    "sade": "^1.8.1",
+    "picocolors": "^1.1.1",
+    "fast-glob": "^3.3.2",
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
-    "@radix-ui/colors": "^3.0.0",
-    "@jerry/eslint-config": "workspace:*",
-    "eslint": "^9.18.0"
+    "@jerryshim/builder": "workspace:*",
+    "@jerryshim/eslint-config": "workspace:*",
+    "@jerryshim/typescript-config": "workspace:*",
+    "typescript": "^5.9.2"
   },
   "peerDependencies": {
     "tailwindcss": ">=4.0.0"
+  },
+  "scripts": {
+    "build": "jerry-build .",
+    "dev": "jerry-build . --watch",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint:fix": "eslint --fix ."
   }
 }

@@ -68,14 +68,5 @@
     "release": "changeset publish",
     "changeset": "changeset",
     "version-packages": "changeset version"
-  },
-  "lint-staged": {
-    "(apps|packages|internal)/**/*.{js,ts,jsx,tsx}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.json": [
-      "prettier --write"
-    ]
   }
 }
