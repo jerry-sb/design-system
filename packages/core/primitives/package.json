@@ -1,6 +1,7 @@
 {
   "name": "@jerry-ui/primitives",
-  "version": "0.0.1",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
