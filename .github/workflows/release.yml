@@ -43,14 +43,23 @@ jobs:
           pnpm -r run typecheck || true
           pnpm -r run build
 
+      # ✅ npm 인증이 실제로 되는지 즉석 확인
+      - name: npm whoami (check auth)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm whoami
+
       # changesets/action GitHub Action 실행.
       # changeset 파일이 있으면 release PR 생성.
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1
         with:
-          version: pnpm changeset version
-          publish: pnpm changeset publish
+          publish: pnpm -r exec changeset publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # ✅ 내장 토큰 사용(별도 GH_TOKEN 필요 X)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # ✅ npm이 읽는 표준 이름
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # (겹쳐도 무해) 일부 툴 호환
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
