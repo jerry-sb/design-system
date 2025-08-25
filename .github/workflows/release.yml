@@ -55,7 +55,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: pnpm -r exec changeset publish
+          version: pnpm changeset version
+          publish: pnpm changeset publish
         env:
           # ✅ 내장 토큰 사용(별도 GH_TOKEN 필요 X)
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
