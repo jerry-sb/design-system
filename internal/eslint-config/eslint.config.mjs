@@ -1,3 +1,3 @@
 //@ts-check
-import baseConfigs from './src/index.js';
+import baseConfigs from './index.js';
 export default baseConfigs();
