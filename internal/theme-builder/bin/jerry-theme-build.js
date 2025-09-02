@@ -49,7 +49,7 @@ prog
 prog
   .command('init [package]')
   .describe('Install component library & set scripts')
-  .action(async (pkg = '@jerry-ui/theme-builder') => {
+  .action(async (pkg = '@jerryshim-ui/theme-builder') => {
     await init(pkg);
   });
 
@@ -64,7 +64,7 @@ prog
   .command('dep-sync')
   .describe('Aggregate theme configs from deps -> merge into main')
   .option('--format', 'mjs|cjs|js', 'mjs')
-  .option('--include', 'Scope glob for node_modules', '@jerry-ui/*')
+  .option('--include', 'Scope glob for node_modules', '@jerryshim-ui/*')
   .option('--write', 'Actually write to file', false)
   .option('--lock', 'Write jerry-theme.deps.lock.json', false)
   .option('--dry', 'Preview only', false)

@@ -1,5 +1,5 @@
 {
-  "name": "@jerry-ui/style-utils",
+  "name": "@jerryshim-ui/style-utils",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -22,8 +22,8 @@
     "tailwind-merge": "^2.5.2"
   },
   "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18"
+    "react": ">=19",
+    "react-dom": ">=19"
   },
   "devDependencies": {
     "@jerryshim/builder": "workspace:*",
