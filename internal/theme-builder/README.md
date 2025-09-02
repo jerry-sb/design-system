@@ -46,7 +46,7 @@ Commands:
 Options (for `dep-sync`):
 
 - `--format=mjs|cjs|js` Output format for the merged config (default: `mjs`)
-- `--include=@jerry-ui/*` Scope glob to scan in `node_modules` (default: `@jerry-ui/*`)
+- `--include=@jerryshim-ui/*` Scope glob to scan in `node_modules` (default: `@jerryshim-ui/*`)
 - `--write` Actually write the merged file (otherwise preview only)
 - `--lock` Write `jerry-theme.deps.lock.json` with sources metadata
 - `--dry` Preview only (no writes)
@@ -55,13 +55,13 @@ Examples:
 
 ```bash
 # Initialize: install component package and add a script
-jerry-theme-build init @jerry-ui/theme-builder
+jerry-theme-build init @jerryshim-ui/theme-builder
 
 # Build CSS from local theme config
 jerry-theme-build sync
 
 # Aggregate dependency configs into your root config (preview)
-jerry-theme-build dep-sync --format mjs --include @jerry-ui/* --dry
+jerry-theme-build dep-sync --format mjs --include @jerryshim-ui/* --dry
 
 # Aggregate and write files
 jerry-theme-build dep-sync --format js --write --lock
@@ -142,7 +142,7 @@ await sync();
 // Aggregate dependency configs and write a merged config
 await depSync({
   format: 'mjs', // 'mjs' | 'cjs' | 'js'
-  include: '@jerry-ui/*',
+  include: '@jerryshim-ui/*',
   write: true,
   lock: true,
   dry: false,

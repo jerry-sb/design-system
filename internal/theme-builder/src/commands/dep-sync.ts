@@ -17,13 +17,13 @@ type ConfigExt = (typeof CONFIG_EXTS)[number];
 
 export async function depSync(opts: {
   format: ConfigExt; // 출력 포맷
-  include: string; // node_modules 스코프 글롭 (예: @jerry-ui/*)
+  include: string; // node_modules 스코프 글롭 (예: @jerryshim-ui/*)
   write: boolean;
   lock: boolean;
   dry: boolean;
 }) {
   const root = process.cwd();
-  console.log(pc.cyan('[jerry-theme] dep-sync: Starting'));
+  console.log(pc.yellow(`\n[jerry-theme] dep-sync: Starting... from ${root}`));
 
   const main = await loadConfig(root);
   const files = await findDependencyConfigs(root, opts.include);
@@ -66,6 +66,7 @@ export async function depSync(opts: {
     await writeFile(target, content, 'utf-8');
     console.log(pc.green(`✔ wrote ${relative(root, target)}`));
   }
+
   if (opts.lock) {
     await writeFile(
       join(root, 'jerry-theme.deps.lock.json'),

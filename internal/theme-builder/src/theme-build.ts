@@ -25,18 +25,10 @@ export default async function themeBuild(options: ThemeConfig = { palettes: [] }
 
   for (const spec of palettes) {
     const base = spec.colorName;
-
-    if (!spec.p3) {
-      console.error(
-        `[themeBuild] Error: palette "${base}" skipped — only P3 palettes are supported.`,
-      );
-      continue;
-    }
-
-    const lightSolidKey = buildColorName({ base, dark: false, p3: true, alpha: false });
-    const darkSolidKey = buildColorName({ base, dark: true, p3: true, alpha: false });
-    const lightAlphaKey = buildColorName({ base, dark: false, p3: true, alpha: true });
-    const darkAlphaKey = buildColorName({ base, dark: true, p3: true, alpha: true });
+    const lightSolidKey = buildColorName({ base, dark: false, p3: spec.p3, alpha: false });
+    const darkSolidKey = buildColorName({ base, dark: true, p3: spec.p3, alpha: false });
+    const lightAlphaKey = buildColorName({ base, dark: false, p3: spec.p3, alpha: true });
+    const darkAlphaKey = buildColorName({ base, dark: true, p3: spec.p3, alpha: true });
     const lightSolid = colors?.[lightSolidKey];
     const darkSolid = colors?.[darkSolidKey];
     const lightAlpha = colors?.[lightAlphaKey];
@@ -53,19 +45,19 @@ export default async function themeBuild(options: ThemeConfig = { palettes: [] }
       '@theme {',
       ...Object.entries(lightSolid).map(
         ([scale, value]) =>
-          `  --color-${lightSolidKey.toLowerCase()}-${scale.match(/\d+/)?.[0] ?? scale}: ${value};`,
+          `  --color-${lightSolidKey}-${scale.match(/\d+/)?.[0] ?? scale}: ${value};`,
       ),
       ...Object.entries(darkSolid).map(
         ([scale, value]) =>
-          `  --color-${darkSolidKey.toLowerCase()}-${scale.match(/\d+/)?.[0] ?? scale}: ${value};`,
+          `  --color-${darkSolidKey}-${scale.match(/\d+/)?.[0] ?? scale}: ${value};`,
       ),
       ...Object.entries(lightAlpha).map(
         ([scale, value]) =>
-          `  --color-${lightAlphaKey.toLowerCase()}-${scale.match(/\d+/)?.[0] ?? scale}: ${value};`,
+          `  --color-${lightAlphaKey}-${scale.match(/\d+/)?.[0] ?? scale}: ${value};`,
       ),
       ...Object.entries(darkAlpha).map(
         ([scale, value]) =>
-          `  --color-${darkAlphaKey.toLowerCase()}-${scale.match(/\d+/)?.[0] ?? scale}: ${value};`,
+          `  --color-${darkAlphaKey}-${scale.match(/\d+/)?.[0] ?? scale}: ${value};`,
       ),
       '}',
     ].join('\n');
@@ -86,7 +78,7 @@ export default async function themeBuild(options: ThemeConfig = { palettes: [] }
       `  @apply bg-${lightSolidKey}-3 dark:bg-${darkSolidKey}-3 hover:bg-${lightAlphaKey}-4 dark:hover:bg-${darkAlphaKey}-4 active:bg-${lightAlphaKey}-5 dark:active:bg-${darkAlphaKey}-5;`,
       '}',
       `@utility bg-${base}-ghost {`,
-      `  @apply bg-transparent dark:bg-transparent hover:bg-${lightAlphaKey}-3 dark:hover:bg-${darkAlphaKey}-3 active:bg-${lightAlphaKey}-4 dark:active:bg-${darkAlphaKey}-4;`,
+      `  @apply bg-transparent dark:bg-transparent hover:bg-${lightAlphaKey}-3 dark:hover:bg-${darkAlphaKey}-6 active:bg-${lightAlphaKey}-4 dark:active:bg-${darkAlphaKey}-4;`,
       '}',
       `@utility bg-${base}-action {`,
       `  @apply bg-${lightSolidKey}-4 dark:bg-${darkSolidKey}-4 hover:bg-${lightSolidKey}-5 dark:hover:bg-${darkSolidKey}-5 active:bg-${lightSolidKey}-6 dark:active:bg-${darkSolidKey}-6;`,
@@ -99,6 +91,9 @@ export default async function themeBuild(options: ThemeConfig = { palettes: [] }
       '}',
       `@utility border-${base}-normal {`,
       `  @apply border-${lightSolidKey}-7 dark:border-${darkSolidKey}-7 hover:border-${lightSolidKey}-8 dark:hover:border-${darkSolidKey}-8;`,
+      '}',
+      `@utility border-${base}-ui {`,
+      `  @apply border-${lightSolidKey}-9 dark:border-${darkSolidKey}-9 hover:border-${lightSolidKey}-10 dark:hover:border-${darkSolidKey}-10;`,
       '}',
       `@utility divide-${base}-dim {`,
       `  @apply divide-${lightSolidKey}-6 dark:divide-${darkSolidKey}-6;`,

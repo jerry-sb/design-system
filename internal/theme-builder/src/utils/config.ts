@@ -23,7 +23,7 @@ dep-sync Aggregate theme configs from deps -> merge into main
 
 Options (dep-sync):
 --format=mjs|cjs|js Output format (default: mjs)
---include=@jerry-ui/* Scope glob for node_modules
+--include=@jerryshim-ui/* Scope glob for node_modules
 --write Actually write to file
 --lock Write jerry-theme.deps.lock.json
 --dry Preview only
