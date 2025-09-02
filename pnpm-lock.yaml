@@ -556,21 +556,9 @@ importers:
       '@jerryshim/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
-      '@jerryshim/eslint-config':
-        specifier: workspace:*
-        version: link:../../../internal/eslint-config
-      '@jerryshim/typescript-config':
-        specifier: workspace:*
-        version: link:../../../internal/typescript-config
-      eslint:
-        specifier: ^9.18.0
-        version: 9.33.0(jiti@2.5.1)
       tailwindcss:
         specifier: ^4.1.11
         version: 4.1.11
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
 
 packages:
 

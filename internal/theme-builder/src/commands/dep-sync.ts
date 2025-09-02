@@ -23,11 +23,11 @@ export async function depSync(opts: {
   dry: boolean;
 }) {
   const root = process.cwd();
-  console.log(pc.yellow(`\n[jerry-theme] dep-sync: Starting... from ${root}`));
+  console.info(pc.yellow(`\n[jerry-theme] dep-sync: Starting... from ${root}`));
 
   const main = await loadConfig(root);
   const files = await findDependencyConfigs(root, opts.include);
-  console.log(pc.gray(`[jerry-theme] dep-sync: Found ${files.length} candidate files`));
+  console.info(pc.gray(`[jerry-theme] dep-sync: Found ${files.length} candidate files`));
 
   let merged: ThemeConfig = { ...main, palettes: [...(main.palettes ?? [])] };
   const paletteComments = new Map<string, string>();
@@ -59,12 +59,12 @@ export async function depSync(opts: {
   ];
   const content = writeConfigString(opts.format, merged, header, { palettes: paletteComments });
 
-  console.log(pc.yellow(`\n[jerry-theme] dep-sync: preview -> ${relative(root, target)}\n`));
-  console.log(pc.dim(content));
+  console.info(pc.yellow(`\n[jerry-theme] dep-sync: preview -> ${relative(root, target)}\n`));
+  console.info(pc.dim(content));
 
   if (opts.write && !opts.dry) {
     await writeFile(target, content, 'utf-8');
-    console.log(pc.green(`✔ wrote ${relative(root, target)}`));
+    console.info(pc.green(`✔ wrote ${relative(root, target)}`));
   }
 
   if (opts.lock) {
@@ -73,10 +73,10 @@ export async function depSync(opts: {
       `${JSON.stringify({ generatedAt: new Date().toISOString(), sources }, null, 2)}\n`,
       'utf-8',
     );
-    console.log(pc.green('✔ wrote jerry-theme.deps.lock.json'));
+    console.info(pc.green('✔ wrote jerry-theme.deps.lock.json'));
   }
 
-  console.log(
+  console.info(
     pc.cyan('ℹ️ Run `jerry-theme sync` to generate palettes from the merged configuration.'),
   );
 }
