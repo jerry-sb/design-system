@@ -34,7 +34,7 @@ sade('jerry-build [target]', true)
 
     try {
       await build(target, { format, css, watch });
-      console.log(pc.green('✔ build finished'));
+      console.info(pc.green('✔ build finished'));
     } catch (e) {
       console.error(pc.red(e instanceof Error ? e.stack : String(e)));
       process.exit(1);

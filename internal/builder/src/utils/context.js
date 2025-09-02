@@ -79,7 +79,7 @@ export default async function buildContext(relativeOrAbs, options) {
 
   if (fs.existsSync(distDir)) {
     fs.rmSync(distDir, { recursive: true, force: true });
-    console.log(pc.green('🧹 Cleaned dist directory'));
+    console.info(pc.green('🧹 Cleaned dist directory'));
   }
 
   return {

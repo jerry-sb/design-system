@@ -10,7 +10,7 @@ import type { RadixColor, ThemeConfig } from '../types';
 export const defaultOutDir = 'src/styles/jerry-theme';
 
 export function printHelp() {
-  console.log(
+  console.info(
     pc.cyan(`
 jerry-theme <command>
 
@@ -45,18 +45,18 @@ export async function loadConfig(root: string): Promise<ThemeConfig> {
     'jerry-theme.config.cjs',
   ].map((p) => join(root, p));
 
-  console.log(pc.gray('[jerry-theme] config: Search candidates'));
-  for (const c of candidates) console.log(pc.gray(` - ${c}`));
+  console.info(pc.gray('[jerry-theme] config: Search candidates'));
+  for (const c of candidates) console.info(pc.gray(` - ${c}`));
 
   for (const p of candidates) {
     if (!existsSync(p)) continue;
-    console.log(pc.gray(`[jerry-theme] config: Using file = ${p}`));
+    console.info(pc.gray(`[jerry-theme] config: Using file = ${p}`));
     const mod = await import(pathToFileURL(p).href);
     const cfg = (mod as any).default ?? (mod as ThemeConfig);
     return cfg;
   }
 
-  console.log(pc.yellow('[jerry-theme] config: Using defaults (no config file found)'));
+  console.info(pc.yellow('[jerry-theme] config: Using defaults (no config file found)'));
   return {
     outputDir: defaultOutDir,
     palettes: [],
@@ -64,7 +64,7 @@ export async function loadConfig(root: string): Promise<ThemeConfig> {
 }
 
 export function validateConfig(cfg: ThemeConfig) {
-  console.log(pc.gray('[jerry-theme] config: Validating configuration'));
+  console.info(pc.gray('[jerry-theme] config: Validating configuration'));
   if (!cfg || !Array.isArray(cfg.palettes)) {
     throw new Error("Invalid config: 'palettes' array is required");
   }
@@ -78,5 +78,5 @@ export function validateConfig(cfg: ThemeConfig) {
       throw new Error(`Invalid config: 'colorName' must be one of ${colorArray.join(', ')}`);
     }
   }
-  console.log(pc.gray(`[jerry-theme] config: Number of palettes = ${cfg.palettes.length}`));
+  console.info(pc.gray(`[jerry-theme] config: Number of palettes = ${cfg.palettes.length}`));
 }

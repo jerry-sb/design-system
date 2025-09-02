@@ -63,11 +63,13 @@
     "build": "pnpm -r run build",
     "dev": "pnpm -r --parallel --filter ./apps/* run dev",
     "typecheck": "pnpm -r run typecheck",
-    "lint": "pnpm -r run lint:fix",
+    "lint": "pnpm -r run lint",
+    "lint:fix": "pnpm -r run lint:fix",
     "format": "prettier --write .",
     "release": "changeset publish",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "test:ci": "vitest run"
+    "test:ci": "vitest run",
+    "clean": "pnpm -r exec rm -rf dist"
   }
 }

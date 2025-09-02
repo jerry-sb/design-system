@@ -8,7 +8,7 @@ export function detectPM(): string {
 }
 
 export function run(cmd: string, args: string[]) {
-  console.log(`[jerry-theme] Running: ${cmd} ${args.join(' ')}`);
+  console.info(`[jerry-theme] Running: ${cmd} ${args.join(' ')}`);
   return new Promise((resolve, reject) => {
     const p = spawn(cmd, args, { stdio: 'inherit', shell: process.platform === 'win32' });
     p.once('error', (err) => reject(err));

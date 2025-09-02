@@ -43,5 +43,9 @@
     "@jerryshim/eslint-config": "workspace:*",
     "eslint": "^9.18.0",
     "typescript": "^5.9.2"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix ."
   }
 }

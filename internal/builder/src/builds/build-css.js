@@ -30,7 +30,7 @@ export default async function buildCssPackage(context, opts = {}) {
   const copyJsStubOnce = () => {
     if (fs.existsSync(rootJsStub)) {
       fs.copyFileSync(rootJsStub, path.join(distDir, 'index.js'));
-      console.log(pc.green('✅ Copied JS stub → dist/index.js'));
+      console.info(pc.green('✅ Copied JS stub → dist/index.js'));
     }
   };
 
@@ -59,19 +59,19 @@ export default async function buildCssPackage(context, opts = {}) {
       watcher.on('event', (e) => {
         switch (e.code) {
           case 'START':
-            console.log(pc.cyan('👀 (CSS) Starting watch [preset.css only]'));
+            console.info(pc.cyan('👀 (CSS) Starting watch [preset.css only]'));
             break;
           case 'BUNDLE_START':
-            console.log(pc.dim('→ Starting CSS build'));
+            console.info(pc.dim('→ Starting CSS build'));
             break;
           case 'BUNDLE_END':
-            console.log(pc.green(`✔ CSS build completed (${e.duration}ms)`));
+            console.info(pc.green(`✔ CSS build completed (${e.duration}ms)`));
             break;
           case 'ERROR':
             console.error(pc.red(`❌ CSS build error: ${e.error?.message ?? e}`));
             break;
           case 'END':
-            console.log(pc.cyan('⏳ Waiting for preset.css changes...'));
+            console.info(pc.cyan('⏳ Waiting for preset.css changes...'));
             break;
         }
       });
@@ -95,12 +95,12 @@ export default async function buildCssPackage(context, opts = {}) {
     });
     await bundle.write({ dir: distDir, format: 'esm', sourcemap: false });
     fs.rmSync(tmpEntry, { force: true });
-    console.log(pc.green('✅ CSS output → dist/preset.css'));
+    console.info(pc.green('✅ CSS output → dist/preset.css'));
     copyJsStubOnce();
   } else {
     const copyOnce = () => {
       fs.copyFileSync(srcPreset, path.join(distDir, 'preset.css'));
-      console.log(pc.green('✅ CSS copied → dist/preset.css'));
+      console.info(pc.green('✅ CSS copied → dist/preset.css'));
     };
     copyOnce();
     copyJsStubOnce();
@@ -119,7 +119,7 @@ export default async function buildCssPackage(context, opts = {}) {
       };
       process.once('SIGINT', stop);
       process.once('SIGTERM', stop);
-      console.log(pc.cyan('⏳ Waiting for preset.css changes...'));
+      console.info(pc.cyan('⏳ Waiting for preset.css changes...'));
       return;
     }
   }

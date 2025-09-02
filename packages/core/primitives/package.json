@@ -31,6 +31,8 @@
     "react-dom": ">=19"
   },
   "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "eslint --fix .",
     "build": "jerry-build .",
     "dev": "jerry-build . --watch",
     "typecheck": "tsc -p tsconfig.json --noEmit"

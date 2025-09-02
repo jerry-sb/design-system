@@ -56,13 +56,13 @@ export default async function buildTsPackage(context, opts = {}) {
     watcher.on('event', async (e) => {
       switch (e.code) {
         case 'START':
-          console.log(pc.cyan('👀 (TS) Starting watch'));
+          console.info(pc.cyan('👀 (TS) Starting watch'));
           break;
         case 'BUNDLE_START':
-          console.log(pc.dim('→ Starting JS bundle'));
+          console.info(pc.dim('→ Starting JS bundle'));
           break;
         case 'BUNDLE_END':
-          console.log(pc.green(`✔ JS bundle completed (${e.duration}ms)`));
+          console.info(pc.green(`✔ JS bundle completed (${e.duration}ms)`));
           if (shouldEmitDts(tsconfigPath, pkg)) {
             try {
               await emitDtsMultiple(entries, distDir, tsconfigPath);
@@ -79,7 +79,7 @@ export default async function buildTsPackage(context, opts = {}) {
           console.error(pc.red(`❌ Build error: ${e.error?.message ?? e}`));
           break;
         case 'END':
-          console.log(pc.cyan('⏳ Waiting for changes...'));
+          console.info(pc.cyan('⏳ Waiting for changes...'));
           break;
       }
     });
@@ -109,7 +109,7 @@ export default async function buildTsPackage(context, opts = {}) {
       exports: 'auto',
       entryFileNames: '[name].cjs',
     });
-    console.log(pc.green('✅ CJS bundle completed'));
+    console.info(pc.green('✅ CJS bundle completed'));
   }
   if (format === 'all' || format === 'esm') {
     await bundle.write({
@@ -118,13 +118,13 @@ export default async function buildTsPackage(context, opts = {}) {
       sourcemap: true,
       entryFileNames: `[name].${esmExt}`,
     });
-    console.log(pc.green('✅ ESM bundle completed'));
+    console.info(pc.green('✅ ESM bundle completed'));
   }
 
   if (shouldEmitDts(tsconfigPath, pkg)) {
     await emitDtsMultiple(context.entries, distDir, tsconfigPath);
-    console.log(pc.green('✅ Type declarations bundle completed'));
+    console.info(pc.green('✅ Type declarations bundle completed'));
   } else {
-    console.log(pc.yellow('ℹ️ Skipping .d.ts based on tsconfig'));
+    console.info(pc.yellow('ℹ️ Skipping .d.ts based on tsconfig'));
   }
 }

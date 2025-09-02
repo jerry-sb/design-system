@@ -59,19 +59,19 @@ export default async function buildJsPackage(context, opts = {}) {
     watcher.on('event', (e) => {
       switch (e.code) {
         case 'START':
-          console.log(pc.cyan('👀 (JS-only) Starting watch'));
+          console.info(pc.cyan('👀 (JS-only) Starting watch'));
           break;
         case 'BUNDLE_START':
-          console.log(pc.dim('→ Starting bundle'));
+          console.info(pc.dim('→ Starting bundle'));
           break;
         case 'BUNDLE_END':
-          console.log(pc.green(`✔ Bundle completed (${e.duration}ms)`));
+          console.info(pc.green(`✔ Bundle completed (${e.duration}ms)`));
           break;
         case 'ERROR':
           console.error(pc.red(`❌ Build error: ${e.error?.message ?? e}`));
           break;
         case 'END':
-          console.log(pc.cyan('⏳ Waiting for changes...'));
+          console.info(pc.cyan('⏳ Waiting for changes...'));
           break;
       }
     });
@@ -101,7 +101,7 @@ export default async function buildJsPackage(context, opts = {}) {
       exports: 'auto',
       entryFileNames: '[name].cjs',
     });
-    console.log(pc.green('✅ (JS-only) CJS bundle completed'));
+    console.info(pc.green('✅ (JS-only) CJS bundle completed'));
   }
   if (format === 'all' || format === 'esm') {
     await bundle.write({
@@ -110,6 +110,6 @@ export default async function buildJsPackage(context, opts = {}) {
       sourcemap: true,
       entryFileNames: `[name].${esmExt}`,
     });
-    console.log(pc.green('✅ (JS-only) ESM bundle completed'));
+    console.info(pc.green('✅ (JS-only) ESM bundle completed'));
   }
 }
