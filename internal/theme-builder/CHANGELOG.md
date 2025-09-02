@@ -1,5 +1,11 @@
 # @jerryshim/theme-builder
 
+## 0.2.2
+
+### Patch Changes
+
+- dd7cfc3: eslint rule 수정 및 log -> info로 전부 변경
+
 ## 0.2.1
 
 ### Patch Changes
