@@ -1,4 +1,4 @@
-import { RadixColor } from '../types';
+import type { RadixColor } from '../types';
 
 export const themeParser = (
   base: RadixColor,

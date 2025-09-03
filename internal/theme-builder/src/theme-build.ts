@@ -26,12 +26,10 @@ export default async function themeBuild(options: ThemeConfig = { palettes: [] }
 
   for (const spec of palettes) {
     const base = spec.colorName;
-
     const { lightSolidKey, darkSolidKey, lightAlphaKey, darkAlphaKey } = resolvePaletteKeys(
       base,
       spec.p3,
     );
-
     const lightSolid = colors?.[lightSolidKey];
     const darkSolid = colors?.[darkSolidKey];
     const lightAlpha = colors?.[lightAlphaKey];
