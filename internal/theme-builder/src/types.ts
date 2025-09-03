@@ -28,8 +28,7 @@ export type RadixColor =
   | 'gold'
   | 'bronze'
   | 'iris'
-  | 'black'
-  | 'white';
+  | 'mono';
 
 export interface PaletteSpec {
   colorName: RadixColor;
