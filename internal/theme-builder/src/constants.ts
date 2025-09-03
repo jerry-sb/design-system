@@ -30,6 +30,5 @@ export const colorArray: RadixColor[] = [
   'gold',
   'bronze',
   'iris',
-  'black',
-  'white',
+  'mono',
 ];
