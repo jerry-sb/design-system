@@ -1,5 +1,11 @@
 # @jerryshim/theme-builder
 
+## 0.3.0
+
+### Minor Changes
+
+- 5a74290: radix color black, white를 활용한 mono 관련 tailwind css 변수 및 유틸 추가
+
 ## 0.2.2
 
 ### Patch Changes
