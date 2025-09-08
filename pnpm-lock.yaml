@@ -388,6 +388,10 @@ importers:
   internal/typescript-config: {}
 
   packages/core/flow-carousel:
+    dependencies:
+      '@jerryshim-ui/flow-dom':
+        specifier: workspace:*
+        version: link:../flow-dom
     devDependencies:
       '@jerryshim/builder':
         specifier: workspace:*
