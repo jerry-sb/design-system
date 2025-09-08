@@ -389,9 +389,6 @@ importers:
 
   packages/core/flow-carousel:
     devDependencies:
-      '@jerryshim-ui/flow-dom':
-        specifier: workspace:*
-        version: link:../flow-dom
       '@jerryshim/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
