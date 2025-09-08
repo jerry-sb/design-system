@@ -15,8 +15,10 @@
   "files": [
     "dist"
   ],
+  "dependecies": {
+    "@jerryshim-ui/flow-dom": "workspace:*"
+  },
   "devDependencies": {
-    "@jerryshim-ui/flow-dom": "workspace:*",
     "@jerryshim/builder": "workspace:*",
     "@jerryshim/eslint-config": "workspace:*",
     "@jerryshim/typescript-config": "workspace:*",
