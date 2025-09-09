@@ -36,14 +36,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
-        run: pnpm -r --if-present run typecheck
-
       - name: Lint
         run: pnpm -r --if-present run lint
 
       - name: Build
         run: pnpm -r --if-present run build
+
+      - name: Typecheck
+        run: pnpm -r --if-present run typecheck
 
       - name: Test (CI)
         run: pnpm -r --if-present run test:ci

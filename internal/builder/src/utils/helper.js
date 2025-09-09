@@ -31,36 +31,35 @@ export function shouldEmitDts(tsconfigPath, pkg) {
 }
 
 export async function emitDtsMultiple(entries, distDir, tsconfigPath) {
-  execSync(
-    `tsc --project ${tsconfigPath} --emitDeclarationOnly --declaration --outDir ${distDir}`,
-    { stdio: 'inherit' },
-  );
   for (const e of entries) {
-    const inputDts = path.join(distDir, `${e.name}.d.ts`);
-    if (!fs.existsSync(inputDts)) continue;
-    const b = await rollup({ input: inputDts, plugins: [dts()], treeshake: false });
+    const b = await rollup({
+      input: e.file, // ex) src/index.ts
+      plugins: [dts({ tsconfig: tsconfigPath })],
+      treeshake: false,
+    });
     await b.write({ file: path.join(distDir, `${e.name}.d.ts`), format: 'es' });
   }
 }
 
 /* ------------------------ context helpers ------------------------ */
 
+function pickEntry(srcDir, name) {
+  const cands = [
+    path.join(srcDir, `${name}.ts`),
+    path.join(srcDir, `${name}.tsx`),
+    path.join(srcDir, `${name}.js`),
+    path.join(srcDir, `${name}.mjs`),
+    path.join(srcDir, `${name}.cjs`),
+  ];
+  return cands.find(fs.existsSync);
+}
+
 export function discoverEntries(srcDir, declared = []) {
   const names = new Set(['index', ...declared]);
-  const pick = (name) => {
-    const cands = [
-      path.join(srcDir, `${name}.ts`),
-      path.join(srcDir, `${name}.tsx`),
-      path.join(srcDir, `${name}.js`),
-      path.join(srcDir, `${name}.mjs`),
-      path.join(srcDir, `${name}.cjs`),
-    ];
-    return cands.find(fs.existsSync);
-  };
   /** @type {{name:string,file:string}[]} */
   const out = [];
   for (const n of names) {
-    const f = pick(n);
+    const f = pickEntry(srcDir, n);
     if (f) out.push({ name: n, file: f });
   }
   return out;
