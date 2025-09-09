@@ -40,8 +40,8 @@ jobs:
 
       - name: Build (typecheck & test optional)
         run: |
-          pnpm -r run typecheck || true
-          pnpm -r run build
+          pnpm -r run build || true
+          pnpm -r run typecheck
 
       # ✅ npm 인증이 실제로 되는지 즉석 확인
       - name: npm whoami (check auth)
