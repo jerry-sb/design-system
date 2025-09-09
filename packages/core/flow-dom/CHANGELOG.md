@@ -1,5 +1,11 @@
 # @jerryshim-ui/flow-dom
 
+## 0.1.1
+
+### Patch Changes
+
+- 8686cba: 변경: 선언 파일 번들 결과물 변경
+
 ## 0.1.0
 
 ### Minor Changes
