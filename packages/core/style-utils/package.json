@@ -17,19 +17,16 @@
     "dist"
   ],
   "dependencies": {
-    "clsx": "^2.1.1",
-    "class-variance-authority": "^0.7.0",
-    "tailwind-merge": "^2.5.2"
-  },
-  "peerDependencies": {
-    "react": ">=19",
-    "react-dom": ">=19"
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
     "@jerryshim/builder": "workspace:*",
     "@jerryshim/eslint-config": "workspace:*",
     "@jerryshim/typescript-config": "workspace:*",
+    "clsx": "^2.1.1",
     "eslint": "^9.18.0",
+    "tailwind-merge": "^2.5.2",
     "typescript": "^5.9.2"
   },
   "scripts": {
