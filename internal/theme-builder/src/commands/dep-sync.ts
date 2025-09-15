@@ -6,8 +6,8 @@ import { pathToFileURL } from 'node:url';
 import fg from 'fast-glob';
 import pc from 'picocolors';
 
-import type { ThemeConfig } from '../types';
-import { loadConfig } from '../utils/config';
+import type { DepSource, PaletteOption, PaletteSpec, ThemeConfig } from '../types';
+import { loadConfig, validateConfig } from '../utils/config';
 import { sha256 } from '../utils/hash';
 import { findWorkspaceGlobs } from '../utils/workspaces';
 
@@ -25,11 +25,12 @@ export async function depSync(opts: {
   const root = process.cwd();
   console.info(pc.yellow(`\n[jerry-theme] dep-sync: Starting... from ${root}`));
 
-  const main = await loadConfig(root);
+  const { config, path } = await loadConfig(root);
   const files = await findDependencyConfigs(root, opts.include);
   console.info(pc.gray(`[jerry-theme] dep-sync: Found ${files.length} candidate files`));
 
-  let merged: ThemeConfig = { ...main, palettes: [...(main.palettes ?? [])] };
+  let merged: ThemeConfig = { ...config, palettes: [...(config.palettes ?? [])] };
+  validateConfig(merged, path);
   const paletteComments = new Map<string, string>();
   const sources: DepSource[] = [];
 
@@ -43,6 +44,8 @@ export async function depSync(opts: {
     const cfg = await readConfigAny(f);
     const tag = `${name}@${version}`;
     const hash = sha256(raw);
+
+    validateConfig(cfg, f);
     sources.push({ name, version, file: f, rel: `./${relative(root, f)}`, hash });
 
     const { out, perItemSource } = mergeConfigs(merged, cfg, `${tag} (${relative(root, f)})`);
@@ -86,8 +89,6 @@ async function readConfigAny(absPath: string): Promise<any> {
   return (mod as any).default ?? (mod as any);
 }
 
-type DepSource = { name: string; version: string; file: string; rel: string; hash: string };
-
 async function findDependencyConfigs(root: string, includeGlob: string): Promise<string[]> {
   const exts = CONFIG_EXTS.join(',');
   const patterns: string[] = [];
@@ -113,23 +114,83 @@ async function findDependencyConfigs(root: string, includeGlob: string): Promise
   return files.filter((f) => !rootConfigs.has(f));
 }
 
-function mergeConfigs(main: ThemeConfig, incoming: ThemeConfig, sourceTag: string) {
-  const out: ThemeConfig = { ...main };
-  if (!out.outputDir && incoming.outputDir) out.outputDir = incoming.outputDir;
+/** PaletteOption 병합 규칙: 더 많이 생성하는 쪽 우선 */
+function mergePaletteOption(
+  main?: PaletteOption,
+  incoming?: PaletteOption,
+): PaletteOption | undefined {
+  if (!main && !incoming) return undefined;
 
+  const a = main;
+  const b = incoming;
+  // option 합치기
+  const pickOption = (
+    optA?: PaletteOption['option'],
+    optB?: PaletteOption['option'],
+  ): PaletteOption['option'] | undefined => {
+    if (optA === 'all' || optB === 'all') return 'all';
+    if (optA && optB) return optA === optB ? optA : 'all';
+    return optA ?? optB;
+  };
+  const option = pickOption(a?.option, b?.option);
+  const p3 = Boolean(a?.p3 || b?.p3) || undefined;
+  const theme = Boolean(a?.theme || b?.theme) || undefined;
+  const reverseTheme = Boolean(a?.['reverse-theme'] || b?.['reverse-theme']) || undefined;
+
+  if (!option && !p3 && !theme) return undefined;
+  const out: PaletteOption = { option: option ?? 'all' } as PaletteOption;
+  if (p3) out.p3 = true;
+  if (theme) out.theme = true;
+  if (reverseTheme) out['reverse-theme'] = true;
+  return out;
+}
+
+/** 단일 팔레트 병합 */
+function mergePalette(main: PaletteSpec, incoming: PaletteSpec) {
+  const merged: PaletteSpec = {
+    colorName: main.colorName,
+    base: mergePaletteOption(main.base, incoming.base),
+    alpha: mergePaletteOption(main.alpha, incoming.alpha),
+  };
+  const changed =
+    JSON.stringify(merged.base) !== JSON.stringify(main.base) ||
+    JSON.stringify(merged.alpha) !== JSON.stringify(main.alpha);
+
+  return { merged, changed } as const;
+}
+
+function mergeConfigs(main: ThemeConfig, incoming: ThemeConfig, sourceTag: string) {
+  // 전역 설정은 main 고정 우선
+  const out: ThemeConfig = {
+    ...main,
+    var_prefix: main.var_prefix,
+    theme_prefix: main.theme_prefix,
+    outputDir: main.outputDir,
+    palettes: [...(main.palettes ?? [])],
+  };
   const perItemSource = new Map<string, string>();
   const map = new Map<string, any>();
 
+  // main 먼저 채우고 출처는 'main'
   for (const p of main.palettes ?? []) {
     map.set(p.colorName, p);
     perItemSource.set(p.colorName, 'main');
   }
+
+  // incoming 적용: 없으면 추가, 있으면 항목별 병합
   for (const p of incoming.palettes ?? []) {
-    if (!map.has(p.colorName)) {
-      map.set(p.colorName, p);
-      perItemSource.set(p.colorName, sourceTag);
+    const key = String(p.colorName);
+    const cur = map.get(key);
+    if (!cur) {
+      map.set(key, p);
+      perItemSource.set(key, `from ${sourceTag}`);
+      continue;
     }
-    // 충돌 시 메인 우선. 필요하면 정책 옵션으로 확장 가능.
+    const { merged, changed } = mergePalette(cur, p);
+    if (changed) {
+      map.set(key, merged);
+      perItemSource.set(key, `merged from ${sourceTag}`);
+    }
   }
 
   out.palettes = Array.from(map.values());
@@ -149,7 +210,9 @@ function writeConfigString(
   const isCjs = format === 'cjs';
   lines.push(isCjs ? 'module.exports = {' : 'export default {');
 
-  if (data.outputDir) lines.push(` outputDir: ${JSON.stringify(data.outputDir)},`);
+  lines.push(` var_prefix: ${JSON.stringify(data.var_prefix ?? 'theme-')},`);
+  lines.push(` theme_prefix: ${JSON.stringify(data.theme_prefix ?? '--jerry-')},`);
+  lines.push(` outputDir: ${JSON.stringify(data.outputDir ?? 'src/styles')},`);
 
   lines.push(' palettes: [');
   for (const p of data.palettes ?? []) {

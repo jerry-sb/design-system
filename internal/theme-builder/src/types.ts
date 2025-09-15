@@ -30,15 +30,27 @@ export type RadixColor =
   | 'iris'
   | 'mono';
 
+export type DepSource = { name: string; version: string; file: string; rel: string; hash: string };
+
+export type ColorOption = 'all' | 'light' | 'dark';
+
+export type PaletteOption = {
+  option: ColorOption;
+  p3?: boolean; // @support display-p3 지원여부
+  theme?: boolean; // @theme inline 지원여부
+  'reverse-theme'?: boolean; // @theme inline reverse
+};
+
 export interface PaletteSpec {
   colorName: RadixColor;
-  colorsOnly?: boolean; // true면 variables-only import
-  p3?: boolean;
+  base?: PaletteOption;
+  alpha?: PaletteOption;
 }
 
 export interface ThemeConfig {
   palettes: PaletteSpec[]; // CLI가 읽는 설정
-  colorsOnly?: boolean;
+  var_prefix?: `${string}-`;
+  theme_prefix?: `--${string}-`;
   outputDir?: string; // default: "src/styles/jerry-theme"
 }
 
