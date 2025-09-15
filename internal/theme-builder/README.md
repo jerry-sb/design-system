@@ -1,6 +1,6 @@
 # @jerryshim/theme-builder
 
-A tiny CLI and library that builds theme CSS files from a simple config. It aggregates color palettes (Radix Colors P3) and generates ready-to-import CSS files for your component packages and apps.
+Tiny CLI and library that builds theme CSS files from a simple config. It aggregates Radix Colors (sRGB + P3) and generates ready-to-import CSS files for apps and libraries.
 
 ## Features
 
@@ -90,23 +90,42 @@ Shape
 ```javascript
 // jerry-theme.config.js
 export default {
+  // Optional prefixes (defaults shown)
+  var_prefix: 'theme-', // used in inline aliases: --color-theme-<...>
+  theme_prefix: '--jerry-', // used for theme vars:    --jerry-<...>
+  outputDir: 'src/styles/jerry-theme',
+
   palettes: [
-    { colorName: 'blue', colorsOnly: false, p3: true },
-    { colorName: 'green', colorsOnly: true, p3: true },
-    // Special palette: blackA + whiteA utilities for guaranteed contrast
-    { colorName: 'mono', p3: true },
+    // Regular color
+    {
+      colorName: 'green',
+      base: { option: 'all', p3: true, theme: true },
+      alpha: { option: 'all', p3: true, theme: true },
+    },
+
+    // Reverse-only base (no normal base vars), normal alpha
+    {
+      colorName: 'blue',
+      base: { option: 'all', p3: true, 'reverse-theme': true },
+      alpha: { option: 'all', p3: true, theme: true },
+    },
+
+    // Special palette: mono (alpha-only)
+    {
+      colorName: 'mono',
+      alpha: { option: 'all', p3: true, 'reverse-theme': true },
+    },
   ],
-  // optional (default: 'src/styles/jerry-theme')
-  outDir: 'src/styles/jerry-theme',
 };
 ```
 
 Notes
 
-- Only P3 palettes are currently supported; non-P3 palettes are skipped with an error log.
-- colorsOnly: true generates only color variables (no utility layers) for that color.
-- mono is a special palette built from Radix blackA and whiteA alpha scales.
-  It ships high-contrast utilities (bg/border/divide/text) that automatically flip for dark mode.
+- `option: 'all' | 'light' | 'dark'` controls which theme scopes are mapped.
+- `p3: true` emits P3 token values and P3 mappings within `@supports (color: color(display-p3 ...))`.
+- `theme: true` emits normal theme variable mappings and inline aliases.
+- `'reverse-theme': true` emits reversed mappings and inline aliases (prefix `r-`).
+- For `mono`, base is ignored; only `alpha` is allowed.
 
 Allowed colorName values (Radix)
 
@@ -125,71 +144,268 @@ Generated Files
 
 For each palette, the builder writes:
 
-- <outDir>/<color>-colors-only.css — CSS custom properties for light/dark, solid/alpha scales
-- <outDir>/<color>.css — Utilities that compose variables (skipped if colorsOnly: true)
-  (For mono, utilities are based on blackA/whiteA only)
+- <outDir>/<color>-colors-only.css — token variables and theme mappings
+  - One or two `@theme` token blocks: sRGB (always), P3 (if available)
+  - Theme variable mappings for normal (`--jerry-...`) when `theme: true`
+  - Theme variable mappings for reversed (`--jerry-r-...`) when `'reverse-theme': true`
+  - Inline aliases inside `@theme inline`:
+    - Normal: `--color-theme-...: var(--jerry-...)` when `theme: true`
+    - Reversed: `--color-theme-r-...: var(--jerry-r-...)` when `'reverse-theme': true`
 
 Aggregated entry files:
 
 - <outDir>/all-colors-only.css — imports all \*-colors-only.css
-- <outDir>/all.css — imports all <color>.css
-
-You can import these CSS files directly in your apps or libraries.
-
-Special: mono (blackA + whiteA)
-
-- Generates:
-- <outDir>/mono-colors-only.css — exposes blackA* / whiteA* vars
-- <outDir>/mono.css — high-contrast utilities that flip in dark mode
-- Included in:
-- all-colors-only.css and all.css automatically
+- <outDir>/all.css — imports all <color>.css (if your setup also generates utilities)
 
 ⸻
 
-Using the mono utilities
+Single example config (multiple options at once)
 
-mono picks blackA in light mode and whiteA in dark mode to keep contrast strong.
+```javascript
+export default {
+  var_prefix: 'theme-',
+  theme_prefix: '--jerry-',
+  outputDir: 'src/styles/jerry-theme',
+  palettes: [
+    // 1) green: normal base + normal alpha
+    {
+      colorName: 'green',
+      base: { option: 'all', p3: true, theme: true },
+      alpha: { option: 'all', p3: true, theme: true },
+    },
 
-Background ladder
+    // 2) blue: reverse-only base + normal alpha
+    {
+      colorName: 'blue',
+      base: { option: 'all', p3: true, 'reverse-theme': true },
+      alpha: { option: 'all', p3: true, theme: true },
+    },
 
-```bash
-bg-mono-app
-bg-mono-subtle
-bg-mono-ui
-bg-mono-ghost
-bg-mono-action
-bg-mono-solid
+    // 3) mono: reverse-only alpha
+    { colorName: 'mono', alpha: { option: 'all', p3: true, 'reverse-theme': true } },
+  ],
+};
 ```
 
-Borders & Dividers
+How to read outputs from this example
 
-```bash
-border-mono-dim
-border-mono-normal
-border-mono-ui
+- green
+  - Normal theme vars: `--jerry-green-N`, `--jerry-greenA-N` for light/dark and P3
+  - Inline aliases: `--color-theme-green-N`, `--color-theme-greenA-N`
+- blue
+  - Reverse theme vars: `--jerry-r-blue-N` (base reversed), alpha normal: `--jerry-blueA-N`
+  - Inline aliases: `--color-theme-r-blue-N`, `--color-theme-blueA-N`
+- mono
+  - Reverse alpha vars only: `--jerry-r-monoA-N`
+  - Inline aliases: `--color-theme-r-monoA-N`
 
-divide-mono-dim
-divide-mono-normal
+Output contents examples (truncated)
+
+Example 1 (green, normal base + normal alpha):
+
+```css
+@theme {
+  /* sRGB tokens */
+  --color-green-1: ...;
+  --color-green-2: ...;
+  /* ... */
+  --color-greenDark-1: ...;
+  /* ... */
+  --color-greenA-1: ...;
+  /* ... */
+  --color-greenDarkA-1: ...;
+}
+
+@theme {
+  /* P3 tokens */
+  --color-greenP3-1: ...;
+  /* ... */
+  --color-greenDarkP3-1: ...;
+  /* ... */
+  --color-greenP3A-1: ...;
+  /* ... */
+  --color-greenDarkP3A-1: ...;
+}
+
+:root {
+  /* base mapping (normal) */
+  --jerry-green-1: var(--color-green-1);
+  /* ... up to -12 */
+  /* alpha mapping (normal) */
+  --jerry-greenA-1: var(--color-greenA-1);
+  /* ... */
+}
+[data-theme='dark'] {
+  --jerry-green-1: var(--color-greenDark-1);
+  /* ... */
+  --jerry-greenA-1: var(--color-greenDarkA-1);
+  /* ... */
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  :root {
+    --jerry-green-1: var(--color-greenP3-1);
+    /* ... */
+    --jerry-greenA-1: var(--color-greenP3A-1);
+    /* ... */
+  }
+  [data-theme='dark'] {
+    --jerry-green-1: var(--color-greenDarkP3-1);
+    /* ... */
+    --jerry-greenA-1: var(--color-greenDarkP3A-1);
+    /* ... */
+  }
+}
+
+@theme inline {
+  /* var_prefix: theme- */
+  --color-theme-green-1: var(--jerry-green-1);
+  /* ... */
+  --color-theme-greenA-1: var(--jerry-greenA-1);
+  /* ... */
+}
 ```
 
-Text/Icons (contrast against background)
+⸻
 
-```bash
-text-on-mono /* default strong contrast */
-text-on-mono-dim /* slightly reduced contrast */
-placeholder-on-mono /* placeholder-level contrast */
-text-on-mono-inverse /* inverted contrast when needed */
+Naming and prefix rules
+
+Prefixes (configurable)
+
+- theme_prefix: used for theme variables you consume in apps
+  - Default: `--jerry-`
+  - Pattern: `--jerry-<name>-<scale>` (1..12)
+  - Reverse variant: `--jerry-r-<name>-<scale>`
+- var_prefix: used for inline alias names under `@theme inline`
+  - Default: `theme-`
+  - Pattern: `--color-theme-<tokenName>-<scale>`
+  - Reverse variant: `--color-theme-r-<tokenName>-<scale>`
+
+Token keys (generated inside @theme blocks)
+
+- sRGB: `--color-<base>-<scale>`, `--color-<base>Dark-<scale>`
+- P3: `--color-<base>P3-<scale>`, `--color-<base>DarkP3-<scale>`
+- Alpha: add `A` suffix, e.g., `--color-blueA-1`, `--color-blueDarkA-1`, and P3: `blueP3A`, `blueDarkP3A`
+- mono: only alpha tokens are generated: `blackA`, `whiteA`, `blackP3A`, `whiteP3A`
+
+Theme vs Reverse mapping
+
+- theme: true → emits normal theme variables and inline aliases
+  - `:root` (light): `--jerry-<base>-N → var(--color-<base>-N)`
+  - `[data-theme='dark']`: `--jerry-<base>-N → var(--color-<base>Dark-N)`
+  - P3 block mirrors the above with `...P3...` tokens
+  - Inline aliases: `--color-theme-<base>-N: var(--jerry-<base>-N)`
+
+- 'reverse-theme': true → emits reversed theme variables and inline aliases
+  - `:root` (light): `--jerry-r-<base>-N → var(--color-<base>Dark-N)`
+  - `[data-theme='dark']`: `--jerry-r-<base>-N → var(--color-<base>-N)`
+  - P3 block mirrors with `...DarkP3...` and `...P3...` tokens
+  - Inline aliases: `--color-theme-r-<base>-N: var(--jerry-r-<base>-N)`
+
+Notes
+
+- Base vs Alpha: use `<base>` or `<base>A` for naming (e.g., `--jerry-blue-1` vs `--jerry-blueA-1`). mono uses only `<base>A` style with `monoA` name.
+- You can enable both `theme` and `'reverse-theme'` for the same variant to emit both sets.
+- If only `'reverse-theme'` is enabled, normal mappings are omitted entirely.
+
+Example 2 (blue, reverse-only base + normal alpha):
+
+```css
+@theme {
+  /* sRGB tokens for blue, blueDark, blueA, blueDarkA */
+}
+@theme {
+  /* P3 tokens for blueP3, blueDarkP3, blueP3A, blueDarkP3A */
+}
+
+:root {
+  /* base mapping (reversed) */
+  --jerry-r-blue-1: var(--color-blueDark-1);
+  /* ... */
+  /* alpha mapping (normal) */
+  --jerry-blueA-1: var(--color-blueA-1);
+  /* ... */
+}
+[data-theme='dark'] {
+  --jerry-r-blue-1: var(--color-blue-1);
+  /* ... */
+  --jerry-blueA-1: var(--color-blueDarkA-1);
+  /* ... */
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  :root {
+    --jerry-r-blue-1: var(--color-blueDarkP3-1);
+    /* ... */
+    --jerry-blueA-1: var(--color-blueP3A-1);
+    /* ... */
+  }
+  [data-theme='dark'] {
+    --jerry-r-blue-1: var(--color-blueP3-1);
+    /* ... */
+    --jerry-blueA-1: var(--color-blueDarkP3A-1);
+    /* ... */
+  }
+}
+
+@theme inline {
+  --color-theme-r-blue-1: var(--jerry-r-blue-1);
+  /* ... */
+  --color-theme-blueA-1: var(--jerry-blueA-1);
+  /* ... */
+}
 ```
 
-Component presets (examples)
+Example 3 (mono, reverse-only alpha):
 
-```bash
-mono-card /* bg-mono-ui + text-on-mono + border-mono-dim */
-mono-surface /* bg-mono-app + text-on-mono */
-mono-button /* high-contrast button for both light/dark */
+```css
+@theme {
+  /* sRGB tokens */
+  --color-blackA-1: ...;
+  /* ... */
+  --color-whiteA-1: ...;
+  /* ... */
+}
+@theme {
+  /* P3 tokens */
+  --color-blackP3A-1: ...;
+  /* ... */
+  --color-whiteP3A-1: ...;
+  /* ... */
+}
+
+:root {
+  /* alpha mapping (reversed) */
+  --jerry-r-monoA-1: var(--color-whiteA-1);
+  /* ... */
+}
+[data-theme='dark'] {
+  --jerry-r-monoA-1: var(--color-blackA-1);
+  /* ... */
+}
+
+@supports (color: color(display-p3 1 1 1)) {
+  :root {
+    --jerry-r-monoA-1: var(--color-whiteP3A-1);
+    /* ... */
+  }
+  [data-theme='dark'] {
+    --jerry-r-monoA-1: var(--color-blackP3A-1);
+    /* ... */
+  }
+}
+
+@theme inline {
+  --color-theme-r-monoA-1: var(--jerry-r-monoA-1);
+  /* ... */
+}
 ```
 
-With Tailwind v4, just import the generated CSS in your project entry and use these utilities as classes.
+⸻
+
+About mono
+
+`mono` exposes only alpha scales using Radix blackA/whiteA. Theme mappings respect `theme` and `'reverse-theme'` just like other palettes.
 
 ⸻
 
@@ -210,12 +426,21 @@ await depSync({
   dry: false,
 });
 
-// Low-level: build CSS from an object in memory (mono + regular palette)
+// Low-level: build CSS from an object in memory (examples)
 await themeBuild({
   outputDir: 'src/styles/jerry-theme',
   palettes: [
-    { colorName: 'mono', p3: true }, // special (blackA/whiteA)
-    { colorName: 'blue', p3: true, colorsOnly: false },
+    // reverse-only base + normal alpha
+    {
+      colorName: 'green',
+      base: { option: 'all', p3: true, 'reverse-theme': true },
+      alpha: { option: 'all', p3: true, theme: true },
+    },
+    // mono reversed alpha-only
+    {
+      colorName: 'mono',
+      alpha: { option: 'all', p3: true, 'reverse-theme': true },
+    },
   ],
 });
 ```

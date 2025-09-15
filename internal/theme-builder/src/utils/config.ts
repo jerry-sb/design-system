@@ -4,8 +4,8 @@ import { pathToFileURL } from 'node:url';
 
 import pc from 'picocolors';
 
-import { colorArray } from '../constants';
-import type { RadixColor, ThemeConfig } from '../types';
+import { colorArray, colorOptions } from '../constants';
+import type { PaletteOption, RadixColor, ThemeConfig } from '../types';
 
 export const defaultOutDir = 'src/styles/jerry-theme';
 
@@ -31,14 +31,22 @@ Options (dep-sync):
 
 Config (jerry-theme.config.js | jerry-theme.config.mjs | jerry-theme.config.cjs):
 {
-"palettes": [ { "colorName": "blue", "colorsOnly": false, "p3": true } ],
-"outDir": "src/styles/jerry-theme",
+  "var_prefix": "--color-",
+  "theme_prefix": "theme-",
+  "outputDir": "src/styles/jerry-theme",
+  "palettes": [
+    {
+      "colorName": "blue",
+      "base": { "option": "all", "p3": true, "theme": true },
+      "alpha": { "option": "all", "p3": true, "theme": true, "reverse-theme": true }
+    }
+  ]
 }
 `),
   );
 }
 
-export async function loadConfig(root: string): Promise<ThemeConfig> {
+export async function loadConfig(root: string): Promise<{ config: ThemeConfig; path: string }> {
   const candidates = [
     'jerry-theme.config.js',
     'jerry-theme.config.mjs',
@@ -53,30 +61,54 @@ export async function loadConfig(root: string): Promise<ThemeConfig> {
     console.info(pc.gray(`[jerry-theme] config: Using file = ${p}`));
     const mod = await import(pathToFileURL(p).href);
     const cfg = (mod as any).default ?? (mod as ThemeConfig);
-    return cfg;
+    return { config: cfg, path: p };
   }
 
   console.info(pc.yellow('[jerry-theme] config: Using defaults (no config file found)'));
   return {
-    outputDir: defaultOutDir,
-    palettes: [],
+    config: {
+      outputDir: defaultOutDir,
+      palettes: [],
+    },
+    path: 'jerry-theme.config',
   };
 }
 
-export function validateConfig(cfg: ThemeConfig) {
+export function validateConfig(cfg: ThemeConfig, path: string) {
   console.info(pc.gray('[jerry-theme] config: Validating configuration'));
-  if (!cfg || !Array.isArray(cfg.palettes)) {
-    throw new Error("Invalid config: 'palettes' array is required");
-  }
+
+  if (!cfg || typeof cfg !== 'object') throw new Error(`path: ${path} -> Invalid config`);
+  if (!Array.isArray(cfg.palettes))
+    throw new Error(`path: ${path} -> Invalid config: 'palettes' array is required`);
+
+  const validatePaletteOption = (name: string, opt?: PaletteOption) => {
+    if (!opt) return;
+    if (!opt.option || !colorOptions.includes(opt.option)) {
+      throw new Error(
+        `path: ${path} -> Invalid config: '${name}.option' must be one of ${colorOptions.join(', ')}`,
+      );
+    }
+    if (typeof opt.p3 !== 'undefined' && typeof opt.p3 !== 'boolean') {
+      throw new Error(`path: ${path} -> Invalid config: '${name}.p3' must be boolean`);
+    }
+    if (typeof opt.theme !== 'undefined' && typeof opt.theme !== 'boolean') {
+      throw new Error(`path: ${path} -> Invalid config: '${name}.theme' must be boolean`);
+    }
+    if (typeof opt['reverse-theme'] !== 'undefined' && typeof opt['reverse-theme'] !== 'boolean') {
+      throw new Error(`path: ${path} -> Invalid config: '${name}.reverse-theme' must be boolean`);
+    }
+  };
 
   for (const p of cfg.palettes) {
-    if (!p || typeof p.colorName !== 'string') {
-      throw new Error(`Invalid config: 'colorName' string is required for each palette`);
-    }
-
     if (!colorArray.includes(p.colorName as RadixColor)) {
-      throw new Error(`Invalid config: 'colorName' must be one of ${colorArray.join(', ')}`);
+      throw new Error(
+        `path: ${path} -> Invalid config: 'colorName' must be one of ${colorArray.join(', ')}`,
+      );
     }
+    validatePaletteOption('base', p.base);
+    validatePaletteOption('alpha', p.alpha);
   }
-  console.info(pc.gray(`[jerry-theme] config: Number of palettes = ${cfg.palettes.length}`));
+  console.info(
+    pc.gray(`[jerry-theme] config: ${path} Number of palettes = ${cfg.palettes.length}`),
+  );
 }

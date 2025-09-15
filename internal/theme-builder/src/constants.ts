@@ -1,4 +1,4 @@
-import type { RadixColor } from './types';
+import type { ColorOption, RadixColor } from './types';
 
 export const colorArray: RadixColor[] = [
   'gray',
@@ -32,3 +32,5 @@ export const colorArray: RadixColor[] = [
   'iris',
   'mono',
 ];
+
+export const colorOptions: ColorOption[] = ['all', 'light', 'dark'];

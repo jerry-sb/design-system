@@ -11,10 +11,10 @@ export async function sync() {
   console.info(pc.gray(`[jerry-theme] sync: Project root = ${root}`));
 
   console.time(pc.gray('[jerry-theme] sync: Loading config'));
-  const config = await loadConfig(root);
+  const { config, path } = await loadConfig(root);
   console.timeEnd(pc.gray('[jerry-theme] sync: Loading config'));
 
-  validateConfig(config);
+  validateConfig(config, path);
   const outDir = config.outputDir ?? defaultOutDir;
   console.info(pc.gray(`[jerry-theme] sync: Output directory = ${outDir}`));
 
@@ -29,7 +29,9 @@ export async function sync() {
   console.info(
     pc.green(
       `✔ Theme synced. Palettes: ${
-        config.palettes.map((p) => `${p.colorName}${p.p3 ? 'P3' : ''}`).join(', ') || '(none)'
+        config.palettes
+          .map((p) => `${p.colorName}${p.base?.p3 || p.alpha?.p3 ? 'P3' : ''}`)
+          .join(', ') || '(none)'
       }`,
     ),
   );
