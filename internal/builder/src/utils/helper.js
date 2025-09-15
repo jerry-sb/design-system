@@ -30,11 +30,21 @@ export function shouldEmitDts(tsconfigPath, pkg) {
   }
 }
 
-export async function emitDtsMultiple(entries, distDir, tsconfigPath) {
+export async function emitDtsMultiple(entries, distDir, tsconfigPath, isExternal) {
   for (const e of entries) {
     const b = await rollup({
       input: e.file, // ex) src/index.ts
-      plugins: [dts({ tsconfig: tsconfigPath })],
+      external: isExternal,
+      plugins: [
+        dts({
+          tsconfig: tsconfigPath,
+          respectExternal: true,
+          compilerOptions: {
+            preserveSymlinks: true,
+            skipLibCheck: true,
+          },
+        }),
+      ],
       treeshake: false,
     });
     await b.write({ file: path.join(distDir, `${e.name}.d.ts`), format: 'es' });

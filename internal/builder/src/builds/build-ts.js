@@ -122,7 +122,7 @@ export default async function buildTsPackage(context, opts = {}) {
   }
 
   if (shouldEmitDts(tsconfigPath, pkg)) {
-    await emitDtsMultiple(context.entries, distDir, tsconfigPath);
+    await emitDtsMultiple(context.entries, distDir, tsconfigPath, isExternal);
     console.info(pc.green('✅ Type declarations bundle completed'));
   } else {
     console.info(pc.yellow('ℹ️ Skipping .d.ts based on tsconfig'));
