@@ -1,6 +1,5 @@
 {
   "name": "@jerryshim-ui/style-utils",
-  "private": true,
   "version": "0.0.0",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -24,9 +23,7 @@
     "@jerryshim/builder": "workspace:*",
     "@jerryshim/eslint-config": "workspace:*",
     "@jerryshim/typescript-config": "workspace:*",
-    "clsx": "^2.1.1",
     "eslint": "^9.18.0",
-    "tailwind-merge": "^2.5.2",
     "typescript": "^5.9.2"
   },
   "scripts": {
