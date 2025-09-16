@@ -1,0 +1,22 @@
+{
+  "name": "@jerryshim-ui/tailwind-util",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/preset.css",
+      "default": "./dist/preset.css"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@jerryshim/builder": "workspace:*",
+    "tailwindcss": "^4.1.11"
+  },
+  "scripts": {
+    "build": "jerry-build ."
+  }
+}
