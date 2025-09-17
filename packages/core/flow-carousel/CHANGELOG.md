@@ -1,5 +1,12 @@
 # @jerryshim-ui/flow-carousel
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [f0a14c4]
+  - @jerryshim-ui/flow-dom@0.2.0
+
 ## 0.1.0
 
 ### Minor Changes
