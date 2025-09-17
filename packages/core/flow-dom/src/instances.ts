@@ -81,13 +81,3 @@ export class Instances {
     return Math.random().toString(36).slice(2, 11);
   }
 }
-
-export const instances = new Instances();
-
-declare global {
-  interface Window {
-    JerryInstances?: Instances;
-  }
-}
-
-if (typeof window !== 'undefined') window.JerryInstances = instances;
