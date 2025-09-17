@@ -1,4 +1,4 @@
-import '@jerryshim-ui/flow-dom/global';
+import './global';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
