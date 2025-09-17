@@ -182,6 +182,9 @@ importers:
       '@jerryshim-ui/button':
         specifier: workspace:*
         version: link:../../packages/ui/button
+      '@jerryshim-ui/carousel':
+        specifier: workspace:*
+        version: link:../../packages/ui/carousel
       '@jerryshim-ui/drawer':
         specifier: workspace:*
         version: link:../../packages/ui/drawer
@@ -194,6 +197,9 @@ importers:
       '@jerryshim-ui/flow-dom':
         specifier: workspace:*
         version: link:../../packages/core/flow-dom
+      '@jerryshim-ui/grid':
+        specifier: workspace:*
+        version: link:../../packages/ui/grid
       '@jerryshim-ui/nav-menu':
         specifier: workspace:*
         version: link:../../packages/ui/nav-menu
@@ -206,6 +212,9 @@ importers:
       '@jerryshim-ui/tailwind-util':
         specifier: workspace:*
         version: link:../../packages/ui/tailwind-utils
+      lucide-react:
+        specifier: ^0.544.0
+        version: 0.544.0(react@19.1.1)
       react:
         specifier: ^19.1.0
         version: 19.1.1
@@ -391,11 +400,10 @@ importers:
   internal/typescript-config: {}
 
   packages/core/flow-carousel:
-    dependencies:
+    devDependencies:
       '@jerryshim-ui/flow-dom':
         specifier: workspace:*
         version: link:../flow-dom
-    devDependencies:
       '@jerryshim/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
@@ -525,6 +533,9 @@ importers:
       eslint:
         specifier: ^9.18.0
         version: 9.33.0(jiti@2.5.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -562,6 +573,55 @@ importers:
       eslint:
         specifier: ^9.18.0
         version: 9.32.0(jiti@2.5.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
+  packages/ui/carousel:
+    dependencies:
+      '@jerryshim-ui/flow-carousel':
+        specifier: workspace:*
+        version: link:../../core/flow-carousel
+      '@jerryshim-ui/flow-dom':
+        specifier: workspace:*
+        version: link:../../core/flow-dom
+      '@jerryshim-ui/primitives':
+        specifier: workspace:*
+        version: link:../../core/primitives
+      '@jerryshim-ui/style-utils':
+        specifier: workspace:*
+        version: link:../../core/style-utils
+      react:
+        specifier: '>=19'
+        version: 19.1.1
+      react-dom:
+        specifier: '>=19'
+        version: 19.1.1(react@19.1.1)
+    devDependencies:
+      '@jerryshim/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
+      '@jerryshim/eslint-config':
+        specifier: workspace:*
+        version: link:../../../internal/eslint-config
+      '@jerryshim/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      '@types/react':
+        specifier: ^19.1.9
+        version: 19.1.10
+      '@types/react-dom':
+        specifier: ^19.1.9
+        version: 19.1.9(@types/react@19.1.10)
+      eslint:
+        specifier: ^9.18.0
+        version: 9.33.0(jiti@2.5.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -577,6 +637,9 @@ importers:
       '@radix-ui/react-dialog':
         specifier: ^1.1.15
         version: 1.1.15(@types/react-dom@19.1.9(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      class-variance-authority:
+        specifier: ^0.7.0
+        version: 0.7.1
       react:
         specifier: '>=19'
         version: 19.1.1
@@ -602,17 +665,57 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.9
         version: 19.1.9(@types/react@19.1.10)
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.1
       eslint:
         specifier: ^9.18.0
         version: 9.33.0(jiti@2.5.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
 
   packages/ui/floating-input:
+    dependencies:
+      '@jerryshim-ui/primitives':
+        specifier: workspace:*
+        version: link:../../core/primitives
+      '@jerryshim-ui/style-utils':
+        specifier: workspace:*
+        version: link:../../core/style-utils
+      class-variance-authority:
+        specifier: ^0.7.0
+        version: 0.7.1
+      react:
+        specifier: '>=19'
+        version: 19.1.1
+      react-dom:
+        specifier: '>=19'
+        version: 19.1.1(react@19.1.1)
+    devDependencies:
+      '@jerryshim/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
+      '@jerryshim/eslint-config':
+        specifier: workspace:*
+        version: link:../../../internal/eslint-config
+      '@jerryshim/theme-builder':
+        specifier: workspace:*
+        version: link:../../../internal/theme-builder
+      '@jerryshim/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      eslint:
+        specifier: ^9.18.0
+        version: 9.33.0(jiti@2.5.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
+  packages/ui/grid:
     dependencies:
       '@jerryshim-ui/primitives':
         specifier: workspace:*
@@ -639,12 +742,12 @@ importers:
       '@jerryshim/typescript-config':
         specifier: workspace:*
         version: link:../../../internal/typescript-config
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.1
       eslint:
         specifier: ^9.18.0
         version: 9.33.0(jiti@2.5.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -685,12 +788,12 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.9
         version: 19.1.9(@types/react@19.1.10)
-      class-variance-authority:
-        specifier: ^0.7.0
-        version: 0.7.1
       eslint:
         specifier: ^9.18.0
         version: 9.33.0(jiti@2.5.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -4351,6 +4454,11 @@ packages:
   lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
+
+  lucide-react@0.544.0:
+    resolution: {integrity: sha512-t5tS44bqd825zAW45UQxpG2CvcC4urOwn2TrwSH8u+MjeE+1NnWl6QqeQ/6NdjMqdOygyiT9p3Ev0p1NJykxjw==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
@@ -10105,6 +10213,10 @@ snapshots:
   lru-cache@6.0.0:
     dependencies:
       yallist: 4.0.0
+
+  lucide-react@0.544.0(react@19.1.1):
+    dependencies:
+      react: 19.1.1
 
   lz-string@1.5.0: {}
 
