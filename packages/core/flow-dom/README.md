@@ -1,9 +1,10 @@
 ## @jerryshim-ui/flow-dom
 
-Lightweight DOM utilities for global event wiring and cross-component instance management.
+A lightweight DOM utility module for browser environments.
 
-- **Events**: Batch-bind functions to a window event type.
-- **Instances**: A central registry to add/get/destroy UI component instances by component key and instance id.
+- **Event utilities**: `on`, `onWindow`, `bindAll` (all return an `EventDisposer`)
+- **Instance registry**: `Instances` class and `instances` / `getInstances` (symbol-backed global singleton)
+- **Optional browser global**: importing `@jerryshim-ui/flow-dom/global` exposes `window.JerryInstances`
 
 ### Installation
 
@@ -20,35 +21,55 @@ yarn add @jerryshim-ui/flow-dom
 #### Events
 
 ```ts
-import { Events } from '@jerryshim-ui/flow-dom';
+import { onWindow, bindAll } from '@jerryshim-ui/flow-dom';
 
-const onResize: EventListener = () => {
+const offResize = onWindow('resize', () => {
   // ...your logic
-};
+});
 
-const onKeydown: EventListener = (e) => {
-  // ...your logic
-};
+// Bind multiple listeners at once and dispose them together
+const offAll = bindAll([
+  {
+    target: window,
+    type: 'keydown',
+    handler: (e) => {
+      /* ... */
+    },
+  },
+  {
+    target: document,
+    type: 'visibilitychange',
+    handler: () => {
+      /* ... */
+    },
+  },
+]);
 
-// Attach listeners to window only when running in a browser
-new Events('resize', [onResize]).init();
-new Events('keydown', [onKeydown]).init();
+// Later, dispose
+offResize();
+offAll();
 ```
 
 Notes:
 
-- `Events` safely checks for `window` before binding.
-- It adds each provided function via `window.addEventListener(type, fn)`.
+- `onWindow` safely becomes a no-op on the server.
+- All event utilities return an `EventDisposer` (a function to remove the listener).
+
+##### EventDisposer
+
+- `EventDisposer` is a function type: `type EventDisposer = () => void`.
+- Calling the function returned by `on`, `onWindow`, or `bindAll` removes the bound listener(s).
+- `bindAll([...])` binds multiple listeners and returns a single disposer that removes them all.
 
 #### Instances
 
 ```ts
 import { instances } from '@jerryshim-ui/flow-dom';
 
-// Any object that implements a destroy lifecycle can be stored
+// Any object with a destroy lifecycle can be stored
 type ButtonInstance = {
   destroy(): void;
-  destroyAndRemoveInstance?(): void; // optional specialized cleanup
+  destroyAndRemoveInstance?(): void; // optional, for more thorough cleanup
 };
 
 const button1: ButtonInstance = {
@@ -63,7 +84,7 @@ instances.addInstance('Button', button1, 'btn-1');
 // Get a single instance
 const i = instances.getInstance('Button', 'btn-1');
 
-// List bucket (record of id -> instance) for a component
+// Get the bucket (id -> instance record) for a component
 const bucket = instances.getInstances('Button');
 
 // Cleanup
@@ -74,15 +95,15 @@ Override behavior:
 
 ```ts
 instances.addInstance('Modal', modalA, 'm1');
-// Overrides existing instance at the same id.
-// If the old instance has destroyAndRemoveInstance, it will be called.
+// Overwrites the existing instance at the same id.
+// If the old instance has destroyAndRemoveInstance, it is called first.
 instances.addInstance('Modal', modalB, 'm1', true);
 ```
 
-Optional TypeScript augmentation (for strong typing):
+Optional TypeScript augmentation (for stronger typing):
 
 ```ts
-// e.g., in a global.d.ts in your app code
+// e.g., in your app's global.d.ts
 declare module '@jerryshim-ui/flow-dom' {
   interface ComponentMap {
     Button: ButtonInstance;
@@ -91,28 +112,59 @@ declare module '@jerryshim-ui/flow-dom' {
 }
 ```
 
-### API Reference
+### API Summary
 
 Exports:
 
-- `Events` (class)
-  - `new Events(eventType: string, eventFunctions?: EventListener[])`
-  - `init(): void` – binds provided functions to `window` for the given `eventType`
-- `instances` (singleton of `Instances`)
-  - `addInstance(component, instance, id?, override = false)`
-  - `getInstance(component, id)`
-  - `getInstances(component)` → `Record<string, Instance> | undefined`
-  - `getAllInstances()` → internal store
-  - `destroyAndRemoveInstance(component, id)`
-  - `removeInstance(component, id)`
-  - `destroyInstanceObject(component, id)`
-  - `instanceExists(component, id)`
-- Types: `EventListenerInstance`, `InstanceOptions`
+- Events
+  - `on(target, type, handler, options?) => EventDisposer`
+  - `onWindow(type, handler, options?) => EventDisposer`
+  - `bindAll(items: { target; type; handler; options? }[]) => EventDisposer`
 
-Browser global for debugging:
+- Instances
+  - `instances: Instances` (singleton)
+  - `getInstances(): Instances` (accessor)
+  - `Instances` methods:
+    - `addInstance(component, instance, id?, override = false)`
+    - `getInstance(component, id)`
+    - `getInstances(component)` → `Record<string, Instance> | undefined`
+    - `getAllInstances()` → returns the internal store
+    - `destroyAndRemoveInstance(component, id)`
+    - `removeInstance(component, id)`
+    - `destroyInstanceObject(component, id)`
+    - `instanceExists(component, id)`
 
-- When `window` exists, `window.JerryInstances` references the same `instances` registry.
+- Types: `EventDisposer`, `EventListenerInstance`, `InstanceOptions`
+
+### Singleton & Global Access
+
+- At runtime, a single registry is shared via `Symbol.for('@jerryshim-ui/flow-dom')`.
+- `instances` and `getInstances()` both point to the same symbol-backed store (safe across HMR / multi-bundle setups).
+
+```ts
+import { instances, getInstances } from '@jerryshim-ui/flow-dom';
+
+const same = instances === getInstances(); // true
+
+// Low-level access (optional)
+const key = Symbol.for('@jerryshim-ui/flow-dom');
+const store = (globalThis as any)[key];
+```
+
+Browser global for debugging (optional):
+
+- Importing `@jerryshim-ui/flow-dom/global` sets `window.JerryInstances = instances` and prints a small debug log.
 
 ### License
 
 MIT
+
+# Third-Party Notices
+
+This product includes portions adapted from Flowbite.
+
+## Flowbite
+
+- License: MIT
+- Copyright: Flowbite contributors
+- Source: https://github.com/themesberg/flowbite

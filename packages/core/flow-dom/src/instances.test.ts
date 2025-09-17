@@ -1,6 +1,9 @@
+import './global';
+
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { Instances, instances } from './instances';
+import { Instances } from './instances';
+import { instances } from './singletons';
 
 // 모듈 보강: 테스트용 컴포넌트 키 추가
 declare module './instances' {

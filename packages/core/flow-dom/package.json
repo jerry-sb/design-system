@@ -11,10 +11,18 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./global": {
+      "import": "./dist/global.js",
+      "require": "./dist/global.cjs"
     }
   },
   "files": [
     "dist"
+  ],
+  "sideEffects": [
+    "./dist/global.js",
+    "./dist/global.cjs"
   ],
   "devDependencies": {
     "@jerryshim/builder": "workspace:*",
