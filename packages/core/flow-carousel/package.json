@@ -15,15 +15,16 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "@jerryshim-ui/flow-dom": "workspace:*"
-  },
   "devDependencies": {
     "@jerryshim/builder": "workspace:*",
     "@jerryshim/eslint-config": "workspace:*",
     "@jerryshim/typescript-config": "workspace:*",
     "eslint": "^9.18.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "@jerryshim-ui/flow-dom": "workspace:*"
+  },
+  "peerDependencies": {
+    "@jerryshim-ui/flow-dom": ">=0.2.0"
   },
   "scripts": {
     "build": "jerry-build .",

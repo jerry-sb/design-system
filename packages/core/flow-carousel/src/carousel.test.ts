@@ -1,21 +1,47 @@
+// carousel.test.ts
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import Carousel, { initCarousels } from './index';
-
+// ─────────────────────────────────────────────────────────────────────────────
+// Mock @jerryshim-ui/flow-dom
+// - getInstances(): addInstance/removeInstance/getInstance 스파이 제공
+// - on(): 실제 DOM 이벤트를 바인딩하고 disposer 반환
+// ─────────────────────────────────────────────────────────────────────────────
 vi.mock('@jerryshim-ui/flow-dom', () => {
   const addInstance = vi.fn();
   const removeInstance = vi.fn();
+  const getInstance = vi.fn();
+  const registry = { addInstance, removeInstance, getInstance };
+  const on = (
+    target: EventTarget,
+    type: string,
+    handler: EventListenerOrEventListenerObject,
+    options?: AddEventListenerOptions | boolean,
+  ) => {
+    target.addEventListener(type, handler as any, options as any);
+    return () => target.removeEventListener(type, handler as any, options as any);
+  };
+
   return {
-    instances: { addInstance, removeInstance },
+    getInstances: () => registry,
+    on,
+    // 타입만 필요하면 여기서 export type 해도 되지만 테스트엔 런타임만 필요
   };
 });
 
-import { instances } from '@jerryshim-ui/flow-dom';
+import { getInstances } from '@jerryshim-ui/flow-dom';
 
+import { Carousel } from './carousel';
+import { initCarousels } from './init';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Test helpers
+// ─────────────────────────────────────────────────────────────────────────────
 const createSlide = (label = '', attrs: Record<string, string | null> = {}) => {
   const el = document.createElement('div');
   el.textContent = label;
-  el.setAttribute('data-carousel-item', attrs['data-carousel-item'] ?? '');
+  const v = attrs['data-carousel-item'];
+  if (v != null) el.setAttribute('data-carousel-item', v);
+  else el.setAttribute('data-carousel-item', '');
   return el as HTMLElement;
 };
 const createIndicator = (pos: number) => {
@@ -64,40 +90,45 @@ const getIndicators = (root: HTMLElement) =>
     el,
   }));
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Lifecycles
+// ─────────────────────────────────────────────────────────────────────────────
 beforeEach(() => {
   document.body.innerHTML = '';
+  vi.clearAllMocks();
 });
 
 afterEach(() => {
-  vi.restoreAllMocks();
   vi.useRealTimers();
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Tests
+// ─────────────────────────────────────────────────────────────────────────────
 describe('Carousel constructor and instance registry', () => {
-  it('throws if carouselEl is null', () => {
-    expect(() => new Carousel(null, [])).toThrowError(/carouselEl is required/);
+  it('throws if el is null', () => {
+    // @ts-expect-error - intentionally wrong to test runtime guard
+    expect(() => new Carousel(null, [])).toThrowError(/el is required/);
   });
 
-  it('registers instance with default override=true and provided id', () => {
+  it('registers instance with override=true and provided id (from element id)', () => {
     const wrap = createCarouselDOM();
+    wrap.root.id = 'my-id';
     const items = getItems(wrap.root);
     const indicators = getIndicators(wrap.root);
-    const c = new Carousel(
-      wrap.root,
-      items,
-      { indicators: { items: indicators } },
-      { override: true, id: 'my-id' },
-    );
-
-    expect(instances.addInstance).toHaveBeenCalledWith('Carousel', c, 'my-id', true);
+    const c = new Carousel(wrap.root, items, { indicators: { items: indicators } });
+    const reg = getInstances() as any;
+    expect(reg.addInstance).toHaveBeenCalledWith('Carousel', c, 'my-id', true);
   });
 
-  it('removeInstance calls instances.removeInstance with its id', () => {
+  it('removeInstance calls registry.removeInstance with its id', () => {
     const wrap = createCarouselDOM();
     const items = getItems(wrap.root);
     const c = new Carousel(wrap.root, items);
     c.removeInstance();
-    expect(instances.removeInstance).toHaveBeenCalledWith('Carousel', c._instanceId);
+
+    const reg = getInstances() as any;
+    expect(reg.removeInstance).toHaveBeenCalledWith('Carousel', c._instanceId);
   });
 
   it('destroyAndRemoveInstance destroys then removes', () => {
@@ -106,6 +137,7 @@ describe('Carousel constructor and instance registry', () => {
     const c = new Carousel(wrap.root, items);
     const spyDestroy = vi.spyOn(c, 'destroy');
     const spyRemove = vi.spyOn(c, 'removeInstance');
+
     c.destroyAndRemoveInstance();
     expect(spyDestroy).toHaveBeenCalledTimes(1);
     expect(spyRemove).toHaveBeenCalledTimes(1);
@@ -122,7 +154,7 @@ describe('Initialization and rotation', () => {
       indicators: { items: indicators },
     });
 
-    // All items get base classes
+    // base classes
     items.forEach(({ el }) => {
       expect(el.classList.contains('absolute')).toBe(true);
       expect(el.classList.contains('inset-0')).toBe(true);
@@ -130,7 +162,6 @@ describe('Initialization and rotation', () => {
       expect(el.classList.contains('transform')).toBe(true);
     });
 
-    // Active item is 1
     expect(c.getActiveItem().position).toBe(1);
   });
 
@@ -181,7 +212,8 @@ describe('Indicators and callbacks', () => {
     const indicators = getIndicators(wrap.root);
     const c = new Carousel(wrap.root, items, { indicators: { items: indicators } });
     const spy = vi.spyOn(c, 'slideTo');
-    indicators?.[2]?.el.dispatchEvent(new Event('click'));
+
+    indicators?.[2]?.el.dispatchEvent(new Event('click', { bubbles: true }));
     expect(spy).toHaveBeenCalledWith(2);
   });
 
@@ -263,40 +295,36 @@ describe('Interval cycle/pause', () => {
     const onNext = vi.fn();
     const c = new Carousel(wrap.root, items, { interval: 100, onNext });
 
-    c.cycle();
-    vi.advanceTimersByTime(50);
-    c.slideTo(1);
-    vi.advanceTimersByTime(60); // previous interval cleared, new one not yet fired
+    c.cycle(); // start at t=0
+    vi.advanceTimersByTime(50); // t=50 (no tick yet)
+    c.slideTo(1); // clears & restarts
+    vi.advanceTimersByTime(60); // t=110 since start, but new timer needs 100ms → not yet
     expect(onNext).toHaveBeenCalledTimes(0);
-    vi.advanceTimersByTime(50); // new interval fires
+    vi.advanceTimersByTime(50); // now first tick fires
     expect(onNext).toHaveBeenCalledTimes(1);
   });
 });
 
-describe('initCarousels and window exposure', () => {
-  it('exposes Carousel and initCarousels on window', () => {
-    expect((window as any).Carousel).toBe(Carousel);
-    expect((window as any).initCarousels).toBe(initCarousels);
-  });
-
+describe('initCarousels DOM wiring', () => {
   it('initializes from DOM and wires controls', () => {
     const { root, prev, next } = createCarouselDOM({ slide: false, active: 0 });
-    const items = getItems(root);
     const spyNext = vi.spyOn(Carousel.prototype, 'next');
     const spyPrev = vi.spyOn(Carousel.prototype, 'prev');
-
-    initCarousels();
-
+    const dispose = initCarousels(); // document 기준
     next.click();
     prev.click();
 
     expect(spyNext).toHaveBeenCalledTimes(1);
     expect(spyPrev).toHaveBeenCalledTimes(1);
+
+    dispose?.(); // cleanup
+    expect(getInstances().getInstance).toHaveBeenCalled(); // 간단한 smoke (선택)
+    // root/controls 정리는 initCarousels 내부 disposer가 수행
   });
 
   it('starts cycling when data-carousel="slide"', () => {
     vi.useFakeTimers();
-    const { root } = createCarouselDOM({ slide: true, interval: 40, active: 0 });
+    createCarouselDOM({ slide: true, interval: 40, active: 0 });
     const spyNext = vi.spyOn(Carousel.prototype, 'next');
 
     initCarousels();
