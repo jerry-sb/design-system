@@ -585,9 +585,6 @@ importers:
       '@jerryshim-ui/flow-carousel':
         specifier: workspace:*
         version: link:../../core/flow-carousel
-      '@jerryshim-ui/flow-dom':
-        specifier: workspace:*
-        version: link:../../core/flow-dom
       '@jerryshim-ui/primitives':
         specifier: workspace:*
         version: link:../../core/primitives
@@ -601,6 +598,9 @@ importers:
         specifier: '>=19'
         version: 19.1.1(react@19.1.1)
     devDependencies:
+      '@jerryshim-ui/flow-dom':
+        specifier: workspace:*
+        version: link:../../core/flow-dom
       '@jerryshim/builder':
         specifier: workspace:*
         version: link:../../../internal/builder
