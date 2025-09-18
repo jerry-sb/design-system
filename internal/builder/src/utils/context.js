@@ -8,10 +8,10 @@ import { discoverEntries, makeExternal } from './helper.js';
 
 /**
  * @param {string} relativeOrAbs
- * @param {{ format?: 'all'|'esm'|'cjs', css?: 'auto'|'postcss'|'none', watch?: boolean }} options
+ * @param {{ format?: 'all'|'esm'|'cjs', css?: 'auto'|'postcss'|'none', watch?: boolean, cssExports?: 'skip'|'copy'|'auto' }} options
  */
 export default async function buildContext(relativeOrAbs, options) {
-  const { format = 'all', css = 'auto' } = options;
+  const { format = 'all', css = 'auto', cssExports = 'skip' } = options;
   const validFormats = new Set(['all', 'cjs', 'esm']);
   const validCss = new Set(['auto', 'postcss', 'none']);
   if (!validFormats.has(format)) {
@@ -31,7 +31,7 @@ export default async function buildContext(relativeOrAbs, options) {
 
   if (!fs.existsSync(pkgJsonPath)) {
     console.error(pc.red(`❌ No package.json found in ${relativeOrAbs}`));
-    process.exit(1);
+    process.exit(1); // CSS 서브패스 매핑 수집 (복사/생성을 위해)
   }
 
   const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf-8'));
@@ -83,7 +83,7 @@ export default async function buildContext(relativeOrAbs, options) {
   }
 
   return {
-    options: { format, css, shouldEnablePostcss, esmExt },
+    options: { format, css, cssExports, shouldEnablePostcss, esmExt },
     paths: { resolvedPath, pkgJsonPath, tsconfigPath, distDir, srcDir },
     flags: { isCssOnly, isJsOnly, hasTsEntry, hasJsEntry, hasPresetCss },
     pkg,

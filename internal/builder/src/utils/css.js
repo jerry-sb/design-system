@@ -3,6 +3,10 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
+import pc from 'picocolors';
+
+import buildCssPackage from '../builds/build-css.js';
+
 /**
  * Theme/Component CSS 빌드 모드
  * - "theme": 전역 유틸/토큰 중심(예: preset.css) → CSS Modules 비활성
@@ -120,4 +124,47 @@ function scanTailwindDirectives(cssFiles) {
   return { hasTw, configPath };
 }
 
-export { findCssFiles, loadCssPlugins, scanTailwindDirectives };
+/**
+ * cssExports 옵션에 따라 preset.css를 빌드/복사하고 exports에 노출한다
+ * @param {Awaited<ReturnType<import('./context.js').default>>} ctx
+ * @param {{ watch?: boolean, cssExports?: 'skip'|'copy'|'auto' }} options
+ */
+async function maybeBuildAndExportPresetCss(ctx, options) {
+  const { flags } = ctx;
+  const cssExports = options.cssExports ?? 'skip';
+  if (!flags.hasPresetCss || cssExports === 'skip') return;
+
+  // CSS 산출 (postcss auto 여부는 context의 shouldEnablePostcss를 사용)
+  await buildCssPackage(ctx, { watch: options.watch });
+  await ensurePresetCssExport(ctx.paths.pkgJsonPath);
+}
+
+/**
+ * package.json exports에 "./preset.css": "./dist/preset.css" 추가
+ * @param {string} pkgJsonPath
+ */
+async function ensurePresetCssExport(pkgJsonPath) {
+  try {
+    const _pkgDir = path.dirname(pkgJsonPath);
+    const raw = fs.readFileSync(pkgJsonPath, 'utf-8');
+    const pkg = JSON.parse(raw);
+    const exportsField = pkg.exports ?? (pkg.exports = {});
+
+    // exports가 문자열/배열 등 예상 외 형태인 경우는 건드리지 않음
+    if (exportsField && typeof exportsField === 'object' && !Array.isArray(exportsField)) {
+      if (!exportsField['./preset.css']) {
+        exportsField['./preset.css'] = './dist/preset.css';
+        fs.writeFileSync(pkgJsonPath, `${JSON.stringify(pkg, null, 2)}\n`);
+        console.info(pc.green('✅ Added exports["./preset.css"] → ./dist/preset.css'));
+      }
+    }
+  } catch (e) {
+    console.warn(
+      pc.yellow(
+        `⚠️ Failed to ensure preset.css export: ${e instanceof Error ? e.message : String(e)}`,
+      ),
+    );
+  }
+}
+
+export { findCssFiles, loadCssPlugins, maybeBuildAndExportPresetCss, scanTailwindDirectives };

@@ -97,6 +97,27 @@ jerry-build [target]
   → Controls the combination of outputs
 - `--css`: `auto` (default) | `postcss` | `none`
   → Enables PostCSS pipeline for CSS-only packages
+- `--css-exports`: `skip` (default) | `copy` | `auto`
+  → When a package contains `preset.css`, generates `dist/preset.css` and ensures `package.json.exports["./preset.css"] = "./dist/preset.css"`. In TS/JS builds this runs before JS bundling. `auto` currently behaves the same as `copy`.
+
+### Build mode detection (TS vs JS-only vs CSS-only)
+
+The builder detects which pipeline to run based on your sources and `exports`:
+
+- TS build: If any discovered entry ends with `.ts` or `.tsx` → TypeScript build with Rollup + `@rollup/plugin-typescript`. Requires a `tsconfig.json`.
+- JS-only build: If there are JS entries (`.js`/`.mjs`/`.cjs`) and no TS entries → JS-only build. Enforces ESM-only policy (fails on `require/module.exports`).
+- CSS-only build: If there are no JS/TS entries and a `preset.css` exists at the package root or under `src/` → CSS-only build.
+
+Entry discovery is driven by `package.json.exports` keys:
+
+- Root `"."` maps to `src/index.*`
+- Each subpath `"./name"` maps to `src/name.*`
+- Wildcards and non-code entries like `"./*.css"`/`"./*.json"` are ignored for JS/TS entry discovery.
+
+CSS PostCSS pipeline is enabled when:
+
+- `--css postcss` is passed, or
+- `--css auto` (default) and the package declares a `tailwindcss` dependency/devDependency.
 
 ### format × type matrix (important)
 
@@ -194,6 +215,13 @@ import './dist/preset.css';
   "files": ["dist"],
 }
 ```
+
+---
+
+## What’s new
+
+- `--css-exports` option: Automatically builds/updates `dist/preset.css` and adds `"./preset.css"` to `exports` when a `preset.css` exists. Runs for TS/JS packages too, not only CSS-only.
+- Explicit build-mode detection: TS vs JS-only vs CSS-only logic clarified and enforced (JS-only requires ESM syntax).
 
 ---
 
