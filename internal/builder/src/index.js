@@ -4,12 +4,15 @@ import buildCssPackage from './builds/build-css.js';
 import buildJsPackage from './builds/build-js.js';
 import buildTsPackage from './builds/build-ts.js';
 import buildContext from './utils/context.js';
+import { maybeBuildAndExportPresetCss } from './utils/css.js';
 
 /**
  * @typedef {Object} BuildOptions
  * @property {'all'|'esm'|'cjs'} [format]
  * @property {'auto'|'postcss'} [css]
  * @property {boolean} [watch]
+ * @property {'skip'|'copy'|'auto'} [cssExports]
+ * @property {string[]} [tailwindImports]
  */
 
 /**
@@ -23,8 +26,10 @@ export default async function build(target, options = {}) {
   if (ctx.flags.isCssOnly) {
     await buildCssPackage(ctx, options);
   } else if (ctx.flags.isJsOnly) {
+    await maybeBuildAndExportPresetCss(ctx, options);
     await buildJsPackage(ctx, options);
   } else {
+    await maybeBuildAndExportPresetCss(ctx, options);
     await buildTsPackage(ctx, options);
   }
   console.timeEnd(pc.cyan('📦 Total build time'));

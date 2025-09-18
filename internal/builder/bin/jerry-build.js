@@ -20,6 +20,8 @@ sade('jerry-build [target]', true)
   .option('--watch, -w', 'Watch mode', false)
   .option('--format', 'all|esm|cjs', 'all')
   .option('--css', 'auto|postcss', 'auto')
+  .option('--css-exports', 'skip|copy|auto', 'skip')
+  .option('--tailwind-imports', 'Comma-separated package names for aggregator generation', '')
   .action(async (t = '.', opts) => {
     const target = path.resolve(process.cwd(), t);
     // 옵션 정제
@@ -31,9 +33,13 @@ sade('jerry-build [target]', true)
     const css = C.has(opts.css) ? opts.css : 'auto';
     /** @type {boolean} */
     const watch = opts.watch === true;
+    /** @type {'skip'|'copy'|'auto'} */
+    const cssExports = ['skip', 'copy', 'auto'].includes(opts['css-exports'])
+      ? opts['css-exports']
+      : 'skip';
 
     try {
-      await build(target, { format, css, watch });
+      await build(target, { format, css, watch, cssExports });
       console.info(pc.green('✔ build finished'));
     } catch (e) {
       console.error(pc.red(e instanceof Error ? e.stack : String(e)));
