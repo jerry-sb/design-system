@@ -2,6 +2,7 @@
 import '@testing-library/jest-dom/vitest';
 
 import { cleanup, render, screen } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@jerryshim-ui/flow-dom/global', () => ({}));
@@ -55,7 +56,7 @@ describe('<Carousel />', () => {
     const disposer1 = vi.fn();
     const disposer2 = vi.fn();
 
-    (initCarousels as unknown as vi.Mock)
+    (initCarousels as unknown as Mock)
       .mockReturnValueOnce(disposer1)
       .mockReturnValueOnce(disposer2);
 
