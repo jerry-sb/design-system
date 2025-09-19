@@ -14,6 +14,15 @@ yarn add @jerryshim-ui/carousel
 
 ### Quick Start
 
+```css
+/* global.css */
+@import 'tailwindcss';
+/* NOTE: The following preset already includes 
+   @import '@jerryshim-ui/flow-carousel/preset.css';
+   so you don’t need to import it separately. */
+@import '@jerryshim-ui/carousel/preset.css';
+```
+
 ```tsx
 import '@jerryshim-ui/flow-dom/global';
 import {
