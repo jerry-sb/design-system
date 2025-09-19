@@ -1,5 +1,25 @@
 # @jerryshim-ui/carousel
 
+## 0.2.0
+
+### Minor Changes
+
+- ec29857: ### Added
+  - Expose **Tailwind v4 preset** via `./preset.css` export for both packages.
+  - Consumers can now do a single import to scan sources (including transitive deps) without manually adding multiple `@source` lines.
+
+  ### Usage
+
+  ```css
+  @import 'tailwindcss';
+  @import '@jerryshim-ui/carousel/preset.css';
+  ```
+
+### Patch Changes
+
+- Updated dependencies [ec29857]
+  - @jerryshim-ui/flow-carousel@0.3.0
+
 ## 0.1.0
 
 ### Minor Changes
