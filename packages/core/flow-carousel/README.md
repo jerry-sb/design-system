@@ -10,6 +10,12 @@ pnpm add @jerryshim-ui/flow-carousel
 
 ## Quick Start
 
+```css
+/* global.css */
+@import 'tailwindcss';
+@import '@jerryshim-ui/flow-carousel/preset.css';
+```
+
 ```html
 <div id="myCarousel" data-carousel="slide" data-carousel-interval="3000">
   <div data-carousel-item="active">Slide 1</div>
