@@ -1,5 +1,14 @@
 # @jerryshim-ui/carousel
 
+## 0.3.0
+
+### Minor Changes
+
+- 24e544f: - **Summary**
+  - Build results now automatically contain `"use client"` at the top of client components
+  - **Migration**: None.
+  - **Refs**: N/A
+
 ## 0.2.0
 
 ### Minor Changes
