@@ -3,6 +3,7 @@ import path from 'node:path';
 import typescript from '@rollup/plugin-typescript';
 import pc from 'picocolors';
 import { rollup, watch as rollupWatch } from 'rollup';
+import preserveDirectives from 'rollup-plugin-preserve-directives';
 
 import { emitDtsMultiple, shouldEmitDts } from '../utils/helper.js';
 
@@ -16,7 +17,10 @@ export default async function buildTsPackage(context, opts = {}) {
   const { distDir, tsconfigPath } = paths;
   const { format, esmExt } = options;
   const watch = !!opts.watch;
-  const plugins = [typescript({ tsconfig: tsconfigPath, declaration: false })];
+  const plugins = [
+    typescript({ tsconfig: tsconfigPath, declaration: false, declarationMap: false }),
+    preserveDirectives(),
+  ];
   const input =
     entries.length === 1
       ? entries[0].file
@@ -31,6 +35,8 @@ export default async function buildTsPackage(context, opts = {}) {
         sourcemap: true,
         exports: 'auto',
         entryFileNames: '[name].cjs',
+        preserveModules: true,
+        preserveModulesRoot: paths.srcDir,
       });
     if (format === 'all' || format === 'esm')
       outputs.push({
@@ -38,6 +44,8 @@ export default async function buildTsPackage(context, opts = {}) {
         format: 'esm',
         sourcemap: true,
         entryFileNames: `[name].${esmExt}`,
+        preserveModules: true,
+        preserveModulesRoot: paths.srcDir,
       });
 
     const watcher = rollupWatch({
@@ -108,6 +116,8 @@ export default async function buildTsPackage(context, opts = {}) {
       sourcemap: true,
       exports: 'auto',
       entryFileNames: '[name].cjs',
+      preserveModules: true,
+      preserveModulesRoot: paths.srcDir,
     });
     console.info(pc.green('✅ CJS bundle completed'));
   }
@@ -117,6 +127,8 @@ export default async function buildTsPackage(context, opts = {}) {
       format: 'esm',
       sourcemap: true,
       entryFileNames: `[name].${esmExt}`,
+      preserveModules: true,
+      preserveModulesRoot: paths.srcDir,
     });
     console.info(pc.green('✅ ESM bundle completed'));
   }

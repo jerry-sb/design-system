@@ -32,12 +32,13 @@
     "jerry-build": "./bin/jerry-build.js"
   },
   "dependencies": {
-    "rollup": "^4.46.3",
     "@rollup/plugin-typescript": "^12.1.4",
-    "rollup-plugin-dts": "^6.2.3",
-    "sade": "^1.8.1",
     "picocolors": "^1.1.1",
-    "rollup-plugin-postcss": "^4.0.2"
+    "rollup": "^4.46.3",
+    "rollup-plugin-dts": "^6.2.3",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-preserve-directives": "^0.4.0",
+    "sade": "^1.8.1"
   },
   "devDependencies": {
     "@jerryshim/eslint-config": "workspace:*",
