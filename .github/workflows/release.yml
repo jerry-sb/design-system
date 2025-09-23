@@ -44,7 +44,7 @@ jobs:
           pnpm -r run typecheck
 
       - name: Test (CI)
-        run: pnpm -r --if-present run test:ci
+        run: pnpm run test:ci
 
       # ✅ npm 인증이 실제로 되는지 즉석 확인
       - name: npm whoami (check auth)
