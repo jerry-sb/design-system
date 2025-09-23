@@ -209,6 +209,9 @@ importers:
       '@jerryshim-ui/skeleton':
         specifier: workspace:*
         version: link:../../packages/ui/skeleton
+      '@jerryshim-ui/spinner':
+        specifier: workspace:*
+        version: link:../../packages/ui/spinner
       '@jerryshim-ui/style-utils':
         specifier: workspace:*
         version: link:../../packages/core/style-utils
@@ -812,6 +815,46 @@ importers:
         version: 5.9.2
 
   packages/ui/skeleton:
+    dependencies:
+      '@jerryshim-ui/primitives':
+        specifier: workspace:*
+        version: link:../../core/primitives
+      '@jerryshim-ui/style-utils':
+        specifier: workspace:*
+        version: link:../../core/style-utils
+      class-variance-authority:
+        specifier: ^0.7.0
+        version: 0.7.1
+      react:
+        specifier: '>=19'
+        version: 19.1.1
+      react-dom:
+        specifier: '>=19'
+        version: 19.1.1(react@19.1.1)
+    devDependencies:
+      '@jerryshim/builder':
+        specifier: workspace:*
+        version: link:../../../internal/builder
+      '@jerryshim/eslint-config':
+        specifier: workspace:*
+        version: link:../../../internal/eslint-config
+      '@jerryshim/theme-builder':
+        specifier: workspace:*
+        version: link:../../../internal/theme-builder
+      '@jerryshim/typescript-config':
+        specifier: workspace:*
+        version: link:../../../internal/typescript-config
+      eslint:
+        specifier: ^9.18.0
+        version: 9.33.0(jiti@2.5.1)
+      tailwindcss:
+        specifier: ^4.1.13
+        version: 4.1.13
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
+  packages/ui/spinner:
     dependencies:
       '@jerryshim-ui/primitives':
         specifier: workspace:*
