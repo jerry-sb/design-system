@@ -1,6 +1,6 @@
 {
   "name": "@jerryshim/builder",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "main": "./src/index.js",
   "module": "./src/index.js",
