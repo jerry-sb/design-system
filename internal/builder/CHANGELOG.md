@@ -1,5 +1,14 @@
 # @jerryshim/builder
 
+## 0.6.0
+
+### Minor Changes
+
+- d1f9b8a: - **Summary**: Automatically preserve directives like `"use client"` during the build process using the `rollup-plugin-preserve-directives` plugin.
+  - **Changes**
+    - Directives are maintained at the top of the output files in the correct order.
+  - **Migration**: None.
+
 ## 0.5.0
 
 ### Minor Changes
