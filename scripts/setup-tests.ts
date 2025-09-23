@@ -1,8 +1,14 @@
 import '@testing-library/jest-dom/vitest';
 import * as axeMatchers from 'vitest-axe/matchers';
-import { expect } from 'vitest';
+import { afterEach, expect } from 'vitest';
+import { cleanup } from '@testing-library/react';
 
 expect.extend(axeMatchers);
+
+// Ensure a clean DOM between tests
+afterEach(() => {
+  cleanup();
+});
 
 global.ResizeObserver = class ResizeObserver {
   cb: any;
