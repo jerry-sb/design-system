@@ -1,5 +1,4 @@
 'use client';
-
 import '@jerryshim-ui/flow-dom/global';
 
 import { initCarousels } from '@jerryshim-ui/flow-carousel';
@@ -42,3 +41,114 @@ export const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
   },
 );
 Carousel.displayName = 'Carousel';
+
+export type CarouselIndicatorProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  AsChildProps & {
+    to: number;
+  };
+
+export const CarouselIndicator = React.forwardRef<HTMLButtonElement, CarouselIndicatorProps>(
+  ({ className, asChild, to, children, ...props }, ref) => {
+    const Comp: any = asChild ? Slot : 'button';
+    return (
+      <Comp
+        ref={ref}
+        type="button"
+        data-carousel-slide-to={String(to)}
+        className={cn('w-3 h-3 rounded-full', className)}
+        {...props}
+      >
+        {children}
+      </Comp>
+    );
+  },
+);
+CarouselIndicator.displayName = 'CarouselIndicator';
+
+export type CarouselIndicatorsProps = React.HTMLAttributes<HTMLDivElement>;
+
+export const CarouselIndicators = React.forwardRef<HTMLDivElement, CarouselIndicatorsProps>(
+  ({ className, children, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          'absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  },
+);
+CarouselIndicators.displayName = 'CarouselIndicators';
+
+export type CarouselItemProps = React.HTMLAttributes<HTMLDivElement> &
+  AsChildProps & {
+    active?: boolean;
+  };
+
+export const CarouselItem = React.forwardRef<HTMLDivElement, CarouselItemProps>(
+  ({ className, asChild, active, children, ...props }, ref) => {
+    const Comp: any = asChild ? Slot : 'div';
+    return (
+      <Comp
+        ref={ref}
+        data-carousel-item={active ? 'active' : ''}
+        className={cn('hidden duration-700 ease-in-out', className)}
+        {...props}
+      >
+        {children}
+      </Comp>
+    );
+  },
+);
+CarouselItem.displayName = 'CarouselItem';
+
+export type CarouselNextProps = React.ButtonHTMLAttributes<HTMLButtonElement> & AsChildProps;
+
+export const CarouselNext = React.forwardRef<HTMLButtonElement, CarouselNextProps>(
+  ({ className, asChild, children, ...props }, ref) => {
+    const Comp: any = asChild ? Slot : 'button';
+    return (
+      <Comp
+        ref={ref}
+        type="button"
+        data-carousel-next
+        className={cn(
+          'absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </Comp>
+    );
+  },
+);
+CarouselNext.displayName = 'CarouselNext';
+
+export type CarouselPrevProps = React.ButtonHTMLAttributes<HTMLButtonElement> & AsChildProps;
+
+export const CarouselPrev = React.forwardRef<HTMLButtonElement, CarouselPrevProps>(
+  ({ className, asChild, children, ...props }, ref) => {
+    const Comp: any = asChild ? Slot : 'button';
+    return (
+      <Comp
+        ref={ref}
+        type="button"
+        data-carousel-prev
+        className={cn(
+          'absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </Comp>
+    );
+  },
+);
+CarouselPrev.displayName = 'CarouselPrev';

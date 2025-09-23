@@ -165,3 +165,8 @@ See `CHANGELOG.md` in the repository root or package subfolder when available.
 ### License
 
 MIT
+
+### Build Format Change
+
+As of version 0.3.0, the build output now includes `"use client"` at the top of client components by default.
+This ensures proper client-side rendering without requiring manual insertion.
