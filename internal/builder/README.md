@@ -256,3 +256,9 @@ import './dist/preset.css';
 ## License
 
 MIT
+
+## New Feature: Directive Preservation
+
+- **Preserve Directives**: The build process now automatically preserves directives such as `"use client"` at the top of the output files. This is achieved using the `rollup-plugin-preserve-directives` plugin, ensuring that directives are maintained in the correct order for runtime environments that depend on them.
+
+---
