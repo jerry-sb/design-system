@@ -13,25 +13,12 @@
       "require": "./dist/index.cjs"
     }
   },
-  "publishConfig": {
-    "access": "public",
-    "types": "./dist/index.d.ts",
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      }
-    },
-    "files": [
-      "dist",
-      "bin",
-      "README.md",
-      "LICENSE"
-    ]
-  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
   "bin": {
     "jerry-theme-build": "./bin/jerry-theme-build.js"
   },
